@@ -6,6 +6,8 @@ import { questService } from '../services/questService';
 import { chatService } from '../services/chatService';
 import GlassCard from '../components/animations/GlassCard';
 import TypingText from '../components/animations/TypingText';
+import ContractTestComponent from '../components/ContractTestComponent';
+import '../components/ContractTestComponent.css';
 
 const TestIntegration = () => {
   const [tests, setTests] = useState([
@@ -187,6 +189,18 @@ const TestIntegration = () => {
             </motion.div>
           ))}
         </div>
+
+        {/* Blockchain Contract Tests */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.0 }}
+        >
+          <GlassCard className="p-6">
+            <h2 className="text-xl font-bold text-white mb-4">Blockchain Contract Tests</h2>
+            <ContractTestComponent />
+          </GlassCard>
+        </motion.div>
 
         {/* API Configuration */}
         <motion.div

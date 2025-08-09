@@ -1,9 +1,9 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { WagmiConfig } from 'wagmi';
+import { WagmiProvider } from 'wagmi';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { wagmiConfig, chains } from './config/wallet';
+import { wagmiConfig } from './config/wallet';
 import { AuthProvider } from './context/AuthContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import RootLayout from './layouts/RootLayout';
@@ -30,9 +30,9 @@ const queryClient = new QueryClient();
 const App = () => {
   return (
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <WagmiConfig config={wagmiConfig}>
-          <RainbowKitProvider chains={chains}>
+      <WagmiProvider config={wagmiConfig}>
+        <QueryClientProvider client={queryClient}>
+          <RainbowKitProvider>
             <AuthProvider>
               <BrowserRouter>
                 <Routes>
@@ -55,8 +55,8 @@ const App = () => {
               </BrowserRouter>
             </AuthProvider>
           </RainbowKitProvider>
-        </WagmiConfig>
-      </QueryClientProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
     </ErrorBoundary>
   );
 };
