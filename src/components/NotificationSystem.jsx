@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaBell, FaTimes, FaEnvelope, FaTrophy, FaUserPlus, FaChartLine } from 'react-icons/fa';
-import { emailAPI } from '../services/api';
+import { emailAPI } from '../services';
 import { useAuthContext as useAuth } from '../context/AuthContext';
 
 const NotificationSystem = () => {

@@ -20,6 +20,7 @@ import Contributions from './pages/Contributions';
 import Debug from './pages/Debug';
 
 import '@rainbow-me/rainbowkit/styles.css';
+import GitHubTest from './pages/GitHubTest';
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ const App = () => {
                     {/* <Route path="/debug" element={<Debug />} /> */}
                   </Route>
                   <Route path="/auth" element={<Auth />} />
+                  <Route path="/github-test" element={<GitHubTest />} />
                 </Routes>
               </BrowserRouter>
             </AuthProvider>

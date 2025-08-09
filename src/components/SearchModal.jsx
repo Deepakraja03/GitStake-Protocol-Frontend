@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaSearch, FaTimes, FaUser, FaCode, FaBook } from 'react-icons/fa';
-import { githubAPI } from '../services/api';
+import { githubAPI } from '../services';
 import GlassCard from './animations/GlassCard';
 
 const SearchModal = ({ isOpen, onClose }) => {

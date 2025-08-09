@@ -1,17 +1,16 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { FaGithub, FaCheck } from 'react-icons/fa';
-import { useAuthContext as useAuth } from '../context/AuthContext';
+import { FaCheck } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import TypingText from '../components/animations/TypingText';
 import GlassCard from '../components/animations/GlassCard';
+import GithubProvider from '../components/Github';
 
 const Auth = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [githubLoading, setGithubLoading] = useState(false);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
-  const { login } = useAuth();
   const navigate = useNavigate();
 
   const onboardingSteps = [
@@ -22,17 +21,19 @@ const Auth = () => {
 
   const [steps, setSteps] = useState(onboardingSteps);
 
-  const handleGitHubAuth = async () => {
-    setGithubLoading(true);
-    
-    // Simulate GitHub OAuth flow
-    setTimeout(() => {
-      setSteps(prev => prev.map(step => 
-        step.id === 'github' ? { ...step, completed: true } : step
-      ));
-      setCurrentStep(2);
-      setGithubLoading(false);
-    }, 2000);
+  const handleGitHubSuccess = (userData) => {
+    console.log('GitHub authentication successful:', userData);
+    setSteps(prev => prev.map(step =>
+      step.id === 'github' ? { ...step, completed: true } : step
+    ));
+    setCurrentStep(2);
+    setGithubLoading(false);
+  };
+
+  const handleGitHubError = (error) => {
+    console.error('GitHub authentication failed:', error);
+    setGithubLoading(false);
+    // You can add error handling UI here
   };
 
   const completeIntroQuest = () => {
@@ -186,25 +187,11 @@ const Auth = () => {
                 exit={{ opacity: 0, y: -20 }}
                 className="space-y-4"
               >
-                <motion.button
-                  onClick={handleGitHubAuth}
-                  disabled={githubLoading}
-                  className="w-full bg-gray-800 hover:bg-gray-700 text-white py-3 px-6 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center space-x-2"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <FaGithub className="w-5 h-5" />
-                  <span>
-                    {githubLoading ? 'Connecting...' : 'Connect GitHub'}
-                  </span>
-                  {githubLoading && (
-                    <motion.div
-                      className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                    />
-                  )}
-                </motion.button>
+                <GithubProvider
+                  onSuccess={handleGitHubSuccess}
+                  onError={handleGitHubError}
+                  className="w-full py-3 px-6 text-lg"
+                />
               </motion.div>
             )}
 

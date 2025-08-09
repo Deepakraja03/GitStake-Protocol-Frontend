@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authAPI } from '../services/api';
+import { authAPI } from '../services';
+import { useFirebaseAuth } from '../hooks/useFirebaseAuth';
 
 const AuthContext = createContext();
 
@@ -15,17 +16,34 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { user: firebaseUser, loading: firebaseLoading } = useFirebaseAuth();
 
   useEffect(() => {
+    // Check for existing auth data
     const token = localStorage.getItem('authToken');
     const userData = localStorage.getItem('userData');
-    
-    if (token && userData) {
+    const githubToken = localStorage.getItem('githubAccessToken');
+
+    if (firebaseUser) {
+      // Firebase user is authenticated
+      const mergedUser = {
+        ...firebaseUser,
+        githubAccessToken: githubToken,
+        ...(userData ? JSON.parse(userData) : {})
+      };
+      setUser(mergedUser);
+      setIsAuthenticated(true);
+    } else if (token && userData) {
+      // Fallback to traditional auth
       setUser(JSON.parse(userData));
       setIsAuthenticated(true);
+    } else {
+      setUser(null);
+      setIsAuthenticated(false);
     }
-    setLoading(false);
-  }, []);
+
+    setLoading(firebaseLoading);
+  }, [firebaseUser, firebaseLoading]);
 
   const login = async (credentials) => {
     try {
@@ -81,6 +99,8 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
+    setUser,
+    setIsAuthenticated,
   };
 
   return (

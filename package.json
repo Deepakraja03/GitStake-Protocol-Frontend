@@ -17,6 +17,7 @@
     "@wagmi/core": "^1.4.13",
     "axios": "^1.6.2",
     "clsx": "^2.1.1",
+    "firebase": "^12.1.0",
     "framer-motion": "^10.18.0",
     "lucide-react": "^0.539.0",
     "monaco-editor": "^0.39.0",

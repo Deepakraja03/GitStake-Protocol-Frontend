@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaCheck, FaTimes, FaSpinner, FaServer } from 'react-icons/fa';
-import { userAPI, githubAPI, chatAPI, emailAPI, authAPI } from '../services/api';
+import { userAPI, githubAPI, chatAPI, emailAPI, authAPI } from '../services';
 import GlassCard from './animations/GlassCard';
 
 const APIStatus = () => {

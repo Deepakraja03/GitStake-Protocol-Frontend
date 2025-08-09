@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { userAPI, githubAPI, chatAPI, emailAPI, authAPI } from '../services/api';
+import { userAPI, githubAPI, chatAPI, emailAPI, authAPI } from '../services';
 
 // Generic API hook
 export const useApi = (apiCall, dependencies = []) => {
