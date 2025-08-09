@@ -1,5 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Outlet, NavLink } from 'react-router-dom'
+import { FaSearch } from 'react-icons/fa'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
+import SearchModal from '../components/SearchModal'
+import NotificationSystem from '../components/NotificationSystem'
 import { colors } from '../theme/colors'
 
 const navItems = [
@@ -9,11 +13,15 @@ const navItems = [
   { to: '/leaderboard', label: 'Leaderboard' },
   { to: '/dao', label: 'DAO' },
   { to: '/challenges', label: 'Challenges' },
+  { to: '/contributions', label: 'Contributions' },
   { to: '/chat', label: 'Chat' },
   { to: '/profile', label: 'Profile' },
+  { to: '/debug', label: 'Debug' },
 ]
 
 const RootLayout = () => {
+  const [showSearch, setShowSearch] = useState(false);
+
   return (
     <div className="min-h-screen bg-[var(--bg)] text-white">
       <header className="sticky top-0 z-40 backdrop-blur border-b border-white/5 bg-black/20">
@@ -32,10 +40,16 @@ const RootLayout = () => {
             ))}
           </nav>
           <div className="flex items-center gap-3">
-            <span className="hidden sm:inline text-xs text-[var(--muted)]">Avalanche Fuji</span>
-            <button className="px-3 py-1.5 rounded-md font-medium" style={{backgroundImage: 'linear-gradient(135deg, #E84142, #9B2CFF)'}}>
-              Connect Wallet
+            <button
+              onClick={() => setShowSearch(true)}
+              className="p-2 text-gray-400 hover:text-white transition-colors"
+              title="Search GitHub"
+            >
+              <FaSearch />
             </button>
+            <NotificationSystem />
+            <span className="hidden sm:inline text-xs text-[var(--muted)]">Avalanche Fuji</span>
+            <ConnectButton />
           </div>
         </div>
       </header>
@@ -43,6 +57,11 @@ const RootLayout = () => {
         <Outlet />
       </main>
       <footer className="py-8 text-center text-xs text-[var(--muted)]">© {new Date().getFullYear()} CodeStake • Built on Avalanche</footer>
+      
+      <SearchModal 
+        isOpen={showSearch} 
+        onClose={() => setShowSearch(false)} 
+      />
     </div>
   )
 }
