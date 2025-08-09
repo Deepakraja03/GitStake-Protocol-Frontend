@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const WhyCodeStake = () => {
+const WhyGitStake = () => {
   const reasons = [
     { title: 'Avalanche Speed', desc: 'Lightning-fast transactions for staking and rewards.' },
     { title: 'AI Scoring', desc: 'Fair contribution scoring with transparent AI.' },
@@ -16,7 +16,7 @@ const WhyCodeStake = () => {
         whileInView={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
-        Why Avalanche + CodeStake
+        Why Avalanche + GitStake
       </motion.h2>
       <div className="grid sm:grid-cols-3 gap-6 mt-8 max-w-6xl mx-auto">
         {reasons.map((reason, i) => (
@@ -36,4 +36,4 @@ const WhyCodeStake = () => {
   );
 };
 
-export default WhyCodeStake;
+export default WhyGitStake;

@@ -17,7 +17,10 @@ import Auth from './pages/Auth';
 import Chat from './pages/Chat';
 import Challenges from './pages/Challenges';
 import Contributions from './pages/Contributions';
+import Quests from './pages/Quests';
 import Debug from './pages/Debug';
+import TestIntegration from './pages/TestIntegration';
+import ZyraAssistant from './components/ZyraAssistant';
 
 import '@rainbow-me/rainbowkit/styles.css';
 import GitHubTest from './pages/GitHubTest';
@@ -38,16 +41,17 @@ const App = () => {
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/stake" element={<Stake />} />
                     <Route path="/leaderboard" element={<Leaderboard />} />
-                    {/* <Route path="/dao" element={<DAO />} /> */}
-                    {/* <Route path="/chat" element={<Chat />} /> */}
+                    <Route path="/quests" element={<Quests />} />
                     <Route path="/challenges" element={<Challenges />} />
                     <Route path="/contributions" element={<Contributions />} />
                     <Route path="/profile" element={<Profile />} />
-                    {/* <Route path="/debug" element={<Debug />} /> */}
+                    <Route path="/debug" element={<Debug />} />
+                    <Route path="/test" element={<TestIntegration />} />
                   </Route>
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/github-test" element={<GitHubTest />} />
                 </Routes>
+                <ZyraAssistant />
               </BrowserRouter>
             </AuthProvider>
           </RainbowKitProvider>

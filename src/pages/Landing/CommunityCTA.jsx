@@ -11,7 +11,7 @@ const CommunityCTA = () => {
         whileInView={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
-        Join the CodeStake Community
+        Join the GitStake Community
       </motion.h2>
       <motion.p
         className="mt-4 text-[var(--muted)] max-w-2xl mx-auto font-['Inter']"

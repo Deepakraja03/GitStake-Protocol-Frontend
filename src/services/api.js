@@ -5,7 +5,7 @@ import axios from 'axios';
  * Centralized axios instance with interceptors and error handling
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://git-stake-protocol-backend.vercel.app/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,

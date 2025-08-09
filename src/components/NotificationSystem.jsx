@@ -53,16 +53,16 @@ const NotificationSystem = () => {
     try {
       switch (type) {
         case 'registration':
-          await emailAPI.sendRegistration(user.email, data);
+          await emailAPI.send.sendRegistrationEmail({ email: user.email, username: user.username, ...data });
           break;
         case 'level-up':
-          await emailAPI.sendLevelUp(user.email, data);
+          await emailAPI.send.sendLevelUpEmail({ email: user.email, username: user.username, ...data });
           break;
         case 'onboarding':
-          await emailAPI.sendOnboarding(user.email, data);
+          await emailAPI.send.sendOnboardingEmail({ email: user.email, username: user.username, ...data });
           break;
         case 'leaderboard':
-          await emailAPI.sendLeaderboard(user.email, data);
+          await emailAPI.send.sendLeaderboardEmail({ email: user.email, username: user.username, ...data });
           break;
         default:
           console.warn('Unknown notification type:', type);

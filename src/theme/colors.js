@@ -1,4 +1,4 @@
-// Avalanche / CodeStake theme tokens
+// Avalanche / GitStake theme tokens
 export const colors = {
   background: '#0B0F1A', // Deep Night
   primary: '#E84142', // Avalanche Red

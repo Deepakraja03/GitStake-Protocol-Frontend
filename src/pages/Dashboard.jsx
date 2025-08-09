@@ -1,303 +1,382 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  TrendingUp, 
-  DollarSign, 
-  Target, 
-  GitBranch,
-  Award
-} from 'lucide-react';
-import CountUp from 'react-countup';
-import {
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  RadialBarChart,
-  RadialBar
-} from 'recharts';
-
-// Import new modern dashboard components
-import StatsOverview from '../components/dashboard/StatsOverview';
-import GitHubActivity from '../components/dashboard/GitHubActivity';
-import PerformanceMetrics from '../components/dashboard/PerformanceMetrics';
-import QuickActions from '../components/dashboard/QuickActions';
-
-// Animated Card Component
-const AnimatedCard = ({ children, delay = 0, className = '' }) => (
-  <motion.div
-    className={`backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-6 ${className}`}
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.6, delay }}
-    whileHover={{ y: -5, scale: 1.02 }}
-  >
-    {children}
-  </motion.div>
-);
-
-// Interactive Chart Component
-const InteractiveChart = ({ timeRange }) => {
-  const [chartType, setChartType] = useState('area');
-  
-  const data = [
-    { name: 'Jan', rewards: 400, staked: 2400, commits: 24 },
-    { name: 'Feb', rewards: 300, staked: 1398, commits: 13 },
-    { name: 'Mar', rewards: 200, staked: 9800, commits: 98 },
-    { name: 'Apr', rewards: 278, staked: 3908, commits: 39 },
-    { name: 'May', rewards: 189, staked: 4800, commits: 48 },
-    { name: 'Jun', rewards: 239, staked: 3800, commits: 38 },
-    { name: 'Jul', rewards: 349, staked: 4300, commits: 43 },
-  ];
-
-  return (
-    <AnimatedCard delay={0.4} className="h-[500px] flex flex-col">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-semibold text-white font-['JetBrains_Mono']">Performance Overview</h3>
-        <div className="flex gap-2">
-          {['area', 'line', 'bar'].map((type) => (
-            <button
-              key={type}
-              onClick={() => setChartType(type)}
-              className={`px-3 py-1 rounded-lg text-sm transition-all font-['JetBrains_Mono'] ${
-                chartType === type
-                  ? 'bg-[#E84142] text-white'
-                  : 'bg-white/10 text-gray-400 hover:text-white'
-              }`}
-            >
-              {type.charAt(0).toUpperCase() + type.slice(1)}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="flex-1">
-        <ResponsiveContainer width="100%" height="100%">
-        {chartType === 'area' && (
-          <AreaChart data={data}>
-            <defs>
-              <linearGradient id="colorRewards" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#E84142" stopOpacity={0.8}/>
-                <stop offset="95%" stopColor="#E84142" stopOpacity={0}/>
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-            <XAxis dataKey="name" stroke="#9CA3AF" />
-            <YAxis stroke="#9CA3AF" />
-            <Tooltip 
-              contentStyle={{ 
-                backgroundColor: '#1F2937', 
-                border: '1px solid #374151',
-                borderRadius: '8px'
-              }} 
-            />
-            <Area 
-              type="monotone" 
-              dataKey="rewards" 
-              stroke="#E84142" 
-              fillOpacity={1} 
-              fill="url(#colorRewards)" 
-            />
-          </AreaChart>
-        )}
-        
-        {chartType === 'line' && (
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-            <XAxis dataKey="name" stroke="#9CA3AF" />
-            <YAxis stroke="#9CA3AF" />
-            <Tooltip 
-              contentStyle={{ 
-                backgroundColor: '#1F2937', 
-                border: '1px solid #374151',
-                borderRadius: '8px'
-              }} 
-            />
-            <Line type="monotone" dataKey="rewards" stroke="#E84142" strokeWidth={3} />
-            <Line type="monotone" dataKey="commits" stroke="#9B2CFF" strokeWidth={3} />
-          </LineChart>
-        )}
-        
-        {chartType === 'bar' && (
-          <BarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-            <XAxis dataKey="name" stroke="#9CA3AF" />
-            <YAxis stroke="#9CA3AF" />
-            <Tooltip 
-              contentStyle={{ 
-                backgroundColor: '#1F2937', 
-                border: '1px solid #374151',
-                borderRadius: '8px'
-              }} 
-            />
-            <Bar dataKey="rewards" fill="#E84142" radius={[4, 4, 0, 0]} />
-          </BarChart>
-        )}
-        </ResponsiveContainer>
-      </div>
-    </AnimatedCard>
-  );
-};
-
-// Staking Panel Component
-const StakingPanel = () => {
-  const stakingData = [
-    { name: 'Staked', value: 75, color: '#E84142' },
-    { name: 'Available', value: 25, color: '#374151' }
-  ];
-
-  return (
-    <AnimatedCard delay={0.6} className="h-[500px] flex flex-col">
-      <h3 className="text-xl font-semibold text-white mb-6 font-['JetBrains_Mono']">Staking Overview</h3>
-
-      <div className="flex-1 flex flex-col justify-between">
-        <div className="flex items-center justify-center mb-6">
-          <ResponsiveContainer width={200} height={200}>
-            <RadialBarChart cx="50%" cy="50%" innerRadius="60%" outerRadius="90%" data={stakingData}>
-              <RadialBar dataKey="value" cornerRadius={10} fill="#E84142" />
-            </RadialBarChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className="space-y-4 mb-6">
-          <div className="flex justify-between items-center">
-            <span className="text-gray-400 font-['JetBrains_Mono']">Total Staked</span>
-            <span className="text-white font-semibold font-['JetBrains_Mono']">1,250.75 AVAX</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-gray-400 font-['JetBrains_Mono']">APY</span>
-            <span className="text-green-400 font-semibold font-['JetBrains_Mono']">12.5%</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-gray-400 font-['JetBrains_Mono']">Rewards Earned</span>
-            <span className="text-white font-semibold font-['JetBrains_Mono']">156.23 AVAX</span>
-          </div>
-        </div>
-
-        <motion.button
-          className="w-full py-3 bg-gradient-to-r from-[#E84142] to-[#9B2CFF] rounded-xl font-semibold text-white font-['JetBrains_Mono']"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          Manage Staking
-        </motion.button>
-      </div>
-    </AnimatedCard>
-  );
-};
+  FaGithub, 
+  FaChartLine, 
+  FaTrophy, 
+  FaCode, 
+  FaStar,
+  FaUsers,
+  FaCalendarAlt,
+  FaFire,
+  FaSpinner,
+  FaSync
+} from 'react-icons/fa';
+import { useAuthContext } from '../context/AuthContext';
+import { userService } from '../services/userService';
+import { githubService } from '../services/githubService';
+import GlassCard from '../components/animations/GlassCard';
+import TypingText from '../components/animations/TypingText';
+import AnimatedCounter from '../components/animations/AnimatedCounter';
 
 const Dashboard = () => {
-  const [timeRange, setTimeRange] = useState('7d');
-  const [isLoading, setIsLoading] = useState(true);
+  const { user, analyzeGitHubUser, getUserAnalytics } = useAuthContext();
+  const [analytics, setAnalytics] = useState(null);
+  const [githubProfile, setGithubProfile] = useState(null);
+  const [repositories, setRepositories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1500);
-    return () => clearTimeout(timer);
-  }, []);
+    if (user?.githubUsername) {
+      loadDashboardData();
+    }
+  }, [user]);
 
-  if (isLoading) {
+  const loadDashboardData = async () => {
+    if (!user?.githubUsername) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Load user analytics
+      const analyticsResult = await getUserAnalytics(user.githubUsername);
+      if (analyticsResult.success) {
+        setAnalytics(analyticsResult.data);
+      }
+
+      // Load GitHub profile
+      const profileResult = await githubService.profile.getProfile(user.githubUsername);
+      setGithubProfile(profileResult);
+
+      // Load repositories
+      const reposResult = await githubService.repositories.getUserRepos(user.githubUsername, {
+        sort: 'updated',
+        per_page: 6
+      });
+      setRepositories(reposResult);
+
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+      setError('Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAnalyzeGitHub = async () => {
+    if (!user?.githubUsername) return;
+
+    setAnalyzing(true);
+    try {
+      const result = await analyzeGitHubUser(user.githubUsername);
+      if (result.success) {
+        // Reload analytics after analysis
+        await loadDashboardData();
+      } else {
+        setError(result.error);
+      }
+    } catch (error) {
+      setError('Failed to analyze GitHub profile');
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0B0F1A] via-[#0F1419] to-[#0B0F1A]">
-        <motion.div
-          className="flex flex-col items-center gap-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          <motion.div
-            className="w-16 h-16 border-4 border-[#E84142] border-t-transparent rounded-full"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          />
-          <motion.p
-            className="text-gray-400 font-['JetBrains_Mono']"
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          >
-            Loading your dashboard...
-          </motion.p>
-        </motion.div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <FaSpinner className="text-4xl text-purple-400 animate-spin mx-auto mb-4" />
+          <p className="text-white">Loading your dashboard...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0B0F1A] via-[#0F1419] to-[#0B0F1A] p-4 md:p-6">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="max-w-7xl mx-auto"
-      >
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <motion.div
-          className="mb-8"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          className="text-center"
         >
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold font-['JetBrains_Mono'] bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                Dashboard
-              </h1>
-              <p className="text-gray-400 mt-2 text-lg font-['JetBrains_Mono']">
-                Welcome back! Here's your development performance overview.
-              </p>
-            </div>
-            
-            <div className="flex items-center gap-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1">
-              {['24h', '7d', '30d', '90d'].map((range) => (
-                <button
-                  key={range}
-                  onClick={() => setTimeRange(range)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 font-['JetBrains_Mono'] ${
-                    timeRange === range
-                      ? 'bg-gradient-to-r from-[#E84142] to-[#9B2CFF] text-white shadow-lg'
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  {range}
-                </button>
-              ))}
-            </div>
-          </div>
+          <h1 className="text-4xl font-bold text-white mb-2">
+            <TypingText text={`Welcome back, ${user?.displayName || user?.githubUsername || 'Developer'}!`} speed={50} />
+          </h1>
+          <p className="text-gray-400">Your GitStake developer dashboard</p>
         </motion.div>
 
+        {/* Analysis Button */}
+        {user?.githubUsername && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center"
+          >
+            <button
+              onClick={handleAnalyzeGitHub}
+              disabled={analyzing}
+              className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              {analyzing ? (
+                <>
+                  <FaSpinner className="animate-spin" />
+                  <span>Analyzing GitHub Profile...</span>
+                </>
+              ) : (
+                <>
+                  <FaSync />
+                  <span>Analyze GitHub Profile</span>
+                </>
+              )}
+            </button>
+          </motion.div>
+        )}
+
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center"
+          >
+            <div className="bg-red-500/20 border border-red-500/30 text-red-300 px-4 py-3 rounded-lg">
+              {error}
+            </div>
+          </motion.div>
+        )}
+
         {/* Stats Overview */}
-        <StatsOverview timeRange={timeRange} />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <GlassCard className="p-6 text-center">
+              <FaCode className="text-3xl text-purple-400 mx-auto mb-3" />
+              <h3 className="text-white font-semibold mb-2">Repositories</h3>
+              <p className="text-2xl font-bold text-purple-400">
+                <AnimatedCounter end={githubProfile?.public_repos || 0} />
+              </p>
+            </GlassCard>
+          </motion.div>
 
-        {/* Main Content */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
-          <div className="xl:col-span-2">
-            <InteractiveChart timeRange={timeRange} />
-          </div>
-          <div>
-            <StakingPanel />
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <GlassCard className="p-6 text-center">
+              <FaUsers className="text-3xl text-blue-400 mx-auto mb-3" />
+              <h3 className="text-white font-semibold mb-2">Followers</h3>
+              <p className="text-2xl font-bold text-blue-400">
+                <AnimatedCounter end={githubProfile?.followers || 0} />
+              </p>
+            </GlassCard>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <GlassCard className="p-6 text-center">
+              <FaTrophy className="text-3xl text-yellow-400 mx-auto mb-3" />
+              <h3 className="text-white font-semibold mb-2">Level</h3>
+              <p className="text-2xl font-bold text-yellow-400">
+                {analytics?.developerLevel || 'Analyzing...'}
+              </p>
+            </GlassCard>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <GlassCard className="p-6 text-center">
+              <FaFire className="text-3xl text-red-400 mx-auto mb-3" />
+              <h3 className="text-white font-semibold mb-2">Score</h3>
+              <p className="text-2xl font-bold text-red-400">
+                <AnimatedCounter end={analytics?.proficiencyScore || 0} />
+              </p>
+            </GlassCard>
+          </motion.div>
         </div>
 
-        {/* Performance and GitHub Activity */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
-          <div className="xl:col-span-2">
-            <PerformanceMetrics timeRange={timeRange} />
-          </div>
-          <div>
-            <QuickActions />
-          </div>
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* GitHub Profile */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+            className="lg:col-span-1"
+          >
+            <GlassCard className="p-6">
+              <h2 className="text-xl font-bold text-white mb-4 flex items-center">
+                <FaGithub className="mr-2" />
+                GitHub Profile
+              </h2>
+              
+              {githubProfile ? (
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-4">
+                    <img
+                      src={githubProfile.avatar_url}
+                      alt={githubProfile.name}
+                      className="w-16 h-16 rounded-full border-2 border-purple-400"
+                    />
+                    <div>
+                      <h3 className="text-white font-semibold">{githubProfile.name}</h3>
+                      <p className="text-gray-400">@{githubProfile.login}</p>
+                    </div>
+                  </div>
+                  
+                  {githubProfile.bio && (
+                    <p className="text-gray-300 text-sm">{githubProfile.bio}</p>
+                  )}
+                  
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="text-gray-400">Following</p>
+                      <p className="text-white font-semibold">{githubProfile.following}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400">Followers</p>
+                      <p className="text-white font-semibold">{githubProfile.followers}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center text-gray-400 text-sm">
+                    <FaCalendarAlt className="mr-2" />
+                    Joined {new Date(githubProfile.created_at).toLocaleDateString()}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <FaSpinner className="text-2xl text-gray-400 animate-spin mx-auto mb-2" />
+                  <p className="text-gray-400">Loading profile...</p>
+                </div>
+              )}
+            </GlassCard>
+          </motion.div>
+
+          {/* Analytics */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="lg:col-span-2"
+          >
+            <GlassCard className="p-6">
+              <h2 className="text-xl font-bold text-white mb-4 flex items-center">
+                <FaChartLine className="mr-2" />
+                Analytics Overview
+              </h2>
+              
+              {analytics ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-gray-400 text-sm">Developer Level</p>
+                      <p className="text-white text-lg font-semibold">{analytics.developerLevel}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400 text-sm">Proficiency Score</p>
+                      <p className="text-purple-400 text-lg font-semibold">{analytics.proficiencyScore}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400 text-sm">Total Commits</p>
+                      <p className="text-blue-400 text-lg font-semibold">{analytics.totalCommits}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-gray-400 text-sm">Innovation Score</p>
+                      <p className="text-green-400 text-lg font-semibold">{analytics.innovationScore}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400 text-sm">Collaboration Score</p>
+                      <p className="text-yellow-400 text-lg font-semibold">{analytics.collaborationScore}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400 text-sm">Primary Language</p>
+                      <p className="text-white text-lg font-semibold">{analytics.primaryLanguage || 'N/A'}</p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-gray-400">
+                    {user?.githubUsername 
+                      ? 'Click "Analyze GitHub Profile" to see your analytics'
+                      : 'Connect your GitHub account to see analytics'
+                    }
+                  </p>
+                </div>
+              )}
+            </GlassCard>
+          </motion.div>
         </div>
 
-        {/* Bottom Section */}
-        <div className="grid grid-cols-1 gap-6">
-          <GitHubActivity timeRange={timeRange} />
-        </div>
-      </motion.div>
+        {/* Recent Repositories */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+        >
+          <GlassCard className="p-6">
+            <h2 className="text-xl font-bold text-white mb-4 flex items-center">
+              <FaCode className="mr-2" />
+              Recent Repositories
+            </h2>
+            
+            {repositories.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {repositories.map((repo, index) => (
+                  <motion.div
+                    key={repo.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8 + index * 0.1 }}
+                    className="bg-white/5 border border-white/10 rounded-lg p-4 hover:bg-white/10 transition-colors"
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="text-white font-semibold truncate">{repo.name}</h3>
+                      {repo.stargazers_count > 0 && (
+                        <div className="flex items-center text-yellow-400 text-sm">
+                          <FaStar className="mr-1" />
+                          {repo.stargazers_count}
+                        </div>
+                      )}
+                    </div>
+                    
+                    {repo.description && (
+                      <p className="text-gray-400 text-sm mb-3 line-clamp-2">{repo.description}</p>
+                    )}
+                    
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>{repo.language}</span>
+                      <span>Updated {new Date(repo.updated_at).toLocaleDateString()}</span>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-gray-400">No repositories found</p>
+              </div>
+            )}
+          </GlassCard>
+        </motion.div>
+      </div>
     </div>
   );
 };

@@ -6,7 +6,7 @@ import HowItWorks from './Landing/HowItWorks';
 import LiveStats from './Landing/LiveStats';
 import GitHubPreview from './Landing/GitHubPreview';
 import Challenges from './Landing/Challenges';
-import WhyCodeStake from './Landing/WhyCodeStake';
+import WhyGitStake from './Landing/WhyGitStake';
 import CommunityCTA from './Landing/CommunityCTA';
 
 
@@ -24,7 +24,7 @@ const Landing = () => {
         <LiveStats />
         <GitHubPreview />
         <Challenges />
-        <WhyCodeStake />
+        <WhyGitStake />
         <CommunityCTA />
       </Suspense>
     </motion.div>

@@ -1,13 +1,20 @@
-# GitStake - Decentralized Developer Rewards Platform
+# GitStake - Advanced GitHub Analytics & Developer Recognition Platform
 
-GitStake is a comprehensive platform that combines GitHub contribution tracking with AVAX staking rewards, gamified challenges, and AI-powered code analysis.
+GitStake is a comprehensive platform that combines GitHub contribution tracking with AVAX staking rewards, gamified quests, AI-powered code analysis, and an intelligent assistant named Zyra.
 
 ## 🚀 Features
 
-### 🔐 Authentication & Wallet
+### 🔐 Authentication & Integration
 - **RainbowKit Integration**: Seamless Avalanche wallet connection
-- **GitHub OAuth**: Connect your GitHub account with animated progress
+- **GitHub OAuth**: Connect your GitHub account with automated analysis
+- **Firebase Auth**: Secure user authentication and session management
 - **Onboarding Flow**: Interactive checklist with Framer Motion animations
+
+### 🤖 AI Assistant - Zyra
+- **Intelligent Chat**: AI-powered assistant for development questions
+- **Deep Search**: Web-enhanced search capabilities for technical queries
+- **Context Awareness**: Understands your GitStake profile and GitHub data
+- **Always Available**: Floating assistant accessible from any page
 
 ### 📊 Dashboard
 - **Wallet Bar**: Real-time AVAX balance and wallet status
@@ -22,6 +29,14 @@ GitStake is a comprehensive platform that combines GitHub contribution tracking 
 - **3D Spinning AVAX Coin**: Three.js animation that spins when adjusting amount
 - **Confirmation Modal**: Framer Motion scale-in with transaction simulation
 
+### 🎯 Quest System
+- **AI-Generated Quests**: Dynamic challenges based on your skill level
+- **8 Difficulty Levels**: From Beginner to Legend
+- **AVAX Rewards**: Earn cryptocurrency for completing quests
+- **Staking Mechanism**: Stake AVAX to participate in quests
+- **Leaderboards**: Compete with other developers
+- **Progress Tracking**: Monitor your quest history and achievements
+
 ### 🏆 Challenges & Boss Battles
 - **Challenge List**: Filter buttons with smooth transitions
 - **Monaco Code Editor**: Full-featured code editor with syntax highlighting
@@ -35,10 +50,13 @@ GitStake is a comprehensive platform that combines GitHub contribution tracking 
 - **Claim Rewards**: Glowing glass card with pulsing claim button
 - **Live Rankings**: Real-time updates with smooth transitions
 
-### 📈 Contributions & Scoring
-- **GitHub Activity Timeline**: Horizontal scroll with activity cards
-- **AI Scorecard**: Animated radial progress gauges for code quality
-- **Code Quality Heatmap**: Color transitions showing metrics across languages
+### 📈 GitHub Analytics & Scoring
+- **Comprehensive Analysis**: 50+ metrics from your GitHub profile
+- **Developer Levels**: 8-tier progression system (Beginner to Legend)
+- **AI Insights**: Intelligent analysis of your coding patterns
+- **Real-time Sync**: Automatic updates when you analyze your profile
+- **Multi-metric Scoring**: Proficiency, innovation, and collaboration scores
+- **Language Analysis**: Detailed breakdown of your programming languages
 
 ### 🗳️ DAO Proposals (Placeholder)
 - **Proposal List**: Accordion expand animations
@@ -111,13 +129,26 @@ GitStake is a comprehensive platform that combines GitHub contribution tracking 
 
 The frontend is designed to work with the GitStake backend API. Ensure your backend is running and accessible at the URL specified in `VITE_API_BASE_URL`.
 
-### API Endpoints Used
+### API Integration
 
-- **User Analytics**: `/api/users/*` - User data and leaderboards
-- **GitHub Integration**: `/api/github/*` - GitHub profile and repository data
-- **AI Chat**: `/api/chat/*` - AI assistant interactions
+The frontend integrates with a comprehensive backend API system:
+
+#### Core Endpoints
+
+- **User Analytics**: `/api/users/*` - User data, analytics, and leaderboards
+- **GitHub Integration**: `/api/github/*` - Complete GitHub API coverage
+- **AI Chat Assistant**: `/api/chat/*` - Zyra AI interactions
+- **Deep Search**: `/api/deep-search/*` - Web-enhanced AI search
+- **Quest System**: `/api/quests/*` - Quest management and rewards
 - **Email Notifications**: `/api/email/*` - Notification system
+- **Cron Jobs**: `/api/cron/*` - Background task management
 - **Authentication**: `/api/auth/*` - User authentication
+
+#### Key Features
+- **GitHub Analysis**: POST `/api/users/analyze` - Comprehensive profile analysis
+- **Quest Generation**: POST `/api/quests/generate` - AI-powered quest creation
+- **Deep Search**: POST `/api/deep-search/search` - Enhanced web search
+- **Real-time Analytics**: GET `/api/users/:username/analytics` - Live metrics
 
 ## 🎨 Key Components
 

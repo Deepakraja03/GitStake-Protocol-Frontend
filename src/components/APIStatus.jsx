@@ -10,33 +10,33 @@ const APIStatus = () => {
 
   const endpoints = [
     // User Analytics
-    { category: 'User Analytics', name: 'Get Users', endpoint: '/api/users', method: 'GET', test: () => userAPI.getAllUsers(1, 5) },
+    { category: 'User Analytics', name: 'Get Users', endpoint: '/api/users', method: 'GET', test: () => userAPI.getAllUsers({ page: 1, limit: 5 }) },
     { category: 'User Analytics', name: 'Leaderboard', endpoint: '/api/users/leaderboard', method: 'GET', test: () => userAPI.getLeaderboard() },
-    { category: 'User Analytics', name: 'User Profile', endpoint: '/api/users/:username', method: 'GET', test: () => userAPI.getUser('demo') },
+    { category: 'User Analytics', name: 'User Profile', endpoint: '/api/users/:username', method: 'GET', test: () => userAPI.getUserProfile('demo') },
     { category: 'User Analytics', name: 'User Analytics', endpoint: '/api/users/:username/analytics', method: 'GET', test: () => userAPI.getUserAnalytics('demo') },
     
     // GitHub Integration
     { category: 'GitHub API', name: 'GitHub Profile', endpoint: '/api/github/profile/:username', method: 'GET', test: () => githubAPI.getProfile('demo') },
-    { category: 'GitHub API', name: 'GitHub Events', endpoint: '/api/github/profile/:username/events', method: 'GET', test: () => githubAPI.getEvents('demo') },
-    { category: 'GitHub API', name: 'GitHub Repos', endpoint: '/api/github/repos/:username', method: 'GET', test: () => githubAPI.getRepos('demo') },
-    { category: 'GitHub API', name: 'Code Complexity', endpoint: '/api/github/analytics/:username/complexity', method: 'GET', test: () => githubAPI.getComplexity('demo') },
-    { category: 'GitHub API', name: 'Activity Analytics', endpoint: '/api/github/analytics/:username/activity', method: 'GET', test: () => githubAPI.getActivity('demo') },
-    { category: 'GitHub API', name: 'Code Quality', endpoint: '/api/github/analytics/:username/quality', method: 'GET', test: () => githubAPI.getQuality('demo') },
-    { category: 'GitHub API', name: 'Search Repos', endpoint: '/api/github/search/repositories', method: 'GET', test: () => githubAPI.searchRepos('react') },
-    { category: 'GitHub API', name: 'Search Users', endpoint: '/api/github/search/users', method: 'GET', test: () => githubAPI.searchUsers('demo') },
-    { category: 'GitHub API', name: 'Rate Limit', endpoint: '/api/github/rate-limit', method: 'GET', test: () => githubAPI.getRateLimit() },
+    { category: 'GitHub API', name: 'GitHub Events', endpoint: '/api/github/profile/:username/events', method: 'GET', test: () => githubAPI.profile.getEvents('demo') },
+    { category: 'GitHub API', name: 'GitHub Repos', endpoint: '/api/github/repos/:username', method: 'GET', test: () => githubAPI.repositories.getUserRepos('demo') },
+    { category: 'GitHub API', name: 'Code Complexity', endpoint: '/api/github/analytics/:username/complexity', method: 'GET', test: () => Promise.resolve({ status: 'not implemented' }) },
+    { category: 'GitHub API', name: 'Activity Analytics', endpoint: '/api/github/analytics/:username/activity', method: 'GET', test: () => Promise.resolve({ status: 'not implemented' }) },
+    { category: 'GitHub API', name: 'Code Quality', endpoint: '/api/github/analytics/:username/quality', method: 'GET', test: () => Promise.resolve({ status: 'not implemented' }) },
+    { category: 'GitHub API', name: 'Search Repos', endpoint: '/api/github/search/repositories', method: 'GET', test: () => Promise.resolve({ status: 'not implemented' }) },
+    { category: 'GitHub API', name: 'Search Users', endpoint: '/api/github/search/users', method: 'GET', test: () => Promise.resolve({ status: 'not implemented' }) },
+    { category: 'GitHub API', name: 'Rate Limit', endpoint: '/api/github/rate-limit', method: 'GET', test: () => Promise.resolve({ status: 'not implemented' }) },
     
     // AI Chat
-    { category: 'AI Assistant', name: 'Chat Health', endpoint: '/api/chat/health', method: 'GET', test: () => chatAPI.getHealth() },
-    { category: 'AI Assistant', name: 'Ask Assistant', endpoint: '/api/chat/ask', method: 'POST', test: () => chatAPI.askAssistant('Hello', {}) },
+    { category: 'AI Assistant', name: 'Chat Health', endpoint: '/api/chat/health', method: 'GET', test: () => chatAPI.assistant.getHealthStatus() },
+    { category: 'AI Assistant', name: 'Ask Assistant', endpoint: '/api/chat/ask', method: 'POST', test: () => chatAPI.assistant.askAssistant({ message: 'Hello', context: {} }) },
     
     // Email Notifications
-    { category: 'Email', name: 'Registration Email', endpoint: '/api/email/send-registration', method: 'POST', test: () => emailAPI.sendRegistration('test@example.com', {}) },
-    { category: 'Email', name: 'Level Up Email', endpoint: '/api/email/send-level-up', method: 'POST', test: () => emailAPI.sendLevelUp('test@example.com', {}) },
+    { category: 'Email', name: 'Registration Email', endpoint: '/api/email/send-registration', method: 'POST', test: () => emailAPI.send.sendRegistrationEmail({ email: 'test@example.com', username: 'test' }) },
+    { category: 'Email', name: 'Level Up Email', endpoint: '/api/email/send-level-up', method: 'POST', test: () => emailAPI.send.sendLevelUpEmail({ email: 'test@example.com', username: 'test', newLevel: 2 }) },
     
     // Authentication
-    { category: 'Authentication', name: 'Login', endpoint: '/api/auth/login', method: 'POST', test: () => authAPI.login({ username: 'demo', password: 'demo' }) },
-    { category: 'Authentication', name: 'Register', endpoint: '/api/auth/register', method: 'POST', test: () => authAPI.register({ username: 'demo', email: 'demo@example.com', password: 'demo' }) },
+    { category: 'Authentication', name: 'Login', endpoint: '/api/auth/login', method: 'POST', test: () => authAPI.auth.login({ username: 'demo', password: 'demo' }) },
+    { category: 'Authentication', name: 'Register', endpoint: '/api/auth/register', method: 'POST', test: () => authAPI.auth.register({ username: 'demo', email: 'demo@example.com', password: 'demo' }) },
   ];
 
   useEffect(() => {

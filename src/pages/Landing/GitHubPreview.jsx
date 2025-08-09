@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { FaGithub, FaCode, FaStar, FaGitAlt, FaUsers, FaFire } from 'react-icons/fa';
+import { FaGithub, FaCode, FaStar, FaCodeBranch, FaUsers, FaFire } from 'react-icons/fa';
 
 const StatCard = ({ icon: Icon, label, value, color, delay }) => (
   <motion.div
@@ -192,7 +192,7 @@ const ContributionHeatmap = () => {
 const GitHubPreview = () => {
   const stats = [
     { icon: FaCode, label: 'Total Commits', value: '2,847', color: 'bg-gradient-to-r from-blue-500 to-blue-600', delay: 0.1 },
-    { icon: FaGitAlt, label: 'Pull Requests', value: '156', color: 'bg-gradient-to-r from-green-500 to-green-600', delay: 0.2 },
+    { icon: FaCodeBranch, label: 'Pull Requests', value: '156', color: 'bg-gradient-to-r from-green-500 to-green-600', delay: 0.2 },
     { icon: FaStar, label: 'Stars Earned', value: '1,234', color: 'bg-gradient-to-r from-yellow-500 to-yellow-600', delay: 0.3 },
     { icon: FaUsers, label: 'Contributors', value: '89', color: 'bg-gradient-to-r from-purple-500 to-purple-600', delay: 0.4 },
   ];

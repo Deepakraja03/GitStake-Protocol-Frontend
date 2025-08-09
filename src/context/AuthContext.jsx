@@ -1,13 +1,14 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authAPI } from '../services';
-import { useFirebaseAuth } from '../hooks/useFirebaseAuth';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { authService } from "../services/authService";
+import { userService } from "../services/userService";
+import { useFirebaseAuth } from "../hooks/useFirebaseAuth";
 
 const AuthContext = createContext();
 
 export const useAuthContext = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -20,16 +21,16 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     // Check for existing auth data
-    const token = localStorage.getItem('authToken');
-    const userData = localStorage.getItem('userData');
-    const githubToken = localStorage.getItem('githubAccessToken');
+    const token = localStorage.getItem("authToken");
+    const userData = localStorage.getItem("userData");
+    const githubToken = localStorage.getItem("githubAccessToken");
 
     if (firebaseUser) {
       // Firebase user is authenticated
       const mergedUser = {
         ...firebaseUser,
         githubAccessToken: githubToken,
-        ...(userData ? JSON.parse(userData) : {})
+        ...(userData ? JSON.parse(userData) : {}),
       };
       setUser(mergedUser);
       setIsAuthenticated(true);
@@ -47,46 +48,74 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      const response = await authAPI.login(credentials);
-      const { token, user: userData } = response.data;
-      
-      localStorage.setItem('authToken', token);
-      localStorage.setItem('userData', JSON.stringify(userData));
-      
-      setUser(userData);
+      const response = await authService.auth.login(credentials);
+
+      setUser(response.user);
       setIsAuthenticated(true);
-      
-      return { success: true, user: userData };
+
+      return { success: true, user: response.user };
     } catch (error) {
-      return { success: false, error: error.response?.data?.message || 'Login failed' };
+      return {
+        success: false,
+        error: error.message || "Login failed",
+      };
     }
   };
 
   const register = async (userData) => {
     try {
-      const response = await authAPI.register(userData);
-      const { token, user: newUser } = response.data;
-      
-      localStorage.setItem('authToken', token);
-      localStorage.setItem('userData', JSON.stringify(newUser));
-      
-      setUser(newUser);
+      const response = await authService.auth.register(userData);
+
+      setUser(response.user);
       setIsAuthenticated(true);
-      
-      return { success: true, user: newUser };
+
+      return { success: true, user: response.user };
     } catch (error) {
-      return { success: false, error: error.response?.data?.message || 'Registration failed' };
+      return {
+        success: false,
+        error: error.message || "Registration failed",
+      };
+    }
+  };
+
+  const analyzeGitHubUser = async (username) => {
+    try {
+      setLoading(true);
+      const response = await userService.analyzeUser({ username });
+
+      // Update user data with analysis results
+      if (user && user.githubUsername === username) {
+        const updatedUser = { ...user, ...response };
+        setUser(updatedUser);
+        localStorage.setItem("userData", JSON.stringify(updatedUser));
+      }
+
+      return { success: true, data: response };
+    } catch (error) {
+      return { success: false, error: error.message || "Analysis failed" };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getUserAnalytics = async (username) => {
+    try {
+      const response = await userService.getUserAnalytics(username);
+      return { success: true, data: response };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message || "Failed to fetch analytics",
+      };
     }
   };
 
   const logout = async () => {
     try {
-      await authAPI.logout();
+      await authService.auth.logout();
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     } finally {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userData');
       setUser(null);
       setIsAuthenticated(false);
     }
@@ -99,13 +128,11 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
+    analyzeGitHubUser,
+    getUserAnalytics,
     setUser,
     setIsAuthenticated,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

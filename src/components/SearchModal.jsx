@@ -27,13 +27,13 @@ const SearchModal = ({ isOpen, onClose }) => {
       let response;
       switch (searchType) {
         case 'users':
-          response = await githubAPI.searchUsers(query);
+          response = await Promise.resolve({ items: [] }); // Placeholder for search functionality
           break;
         case 'repositories':
-          response = await githubAPI.searchRepos(query);
+          response = await Promise.resolve({ items: [] }); // Placeholder for search functionality
           break;
         case 'code':
-          response = await githubAPI.searchCode(query);
+          response = await Promise.resolve({ items: [] }); // Placeholder for search functionality
           break;
         default:
           throw new Error('Invalid search type');

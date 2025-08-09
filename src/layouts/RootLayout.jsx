@@ -8,15 +8,13 @@ import { colors } from '../theme/colors'
 
 const navItems = [
   { to: '/', label: 'Home' },
-  { to: '/stake', label: 'Stake' },
   { to: '/dashboard', label: 'Dashboard' },
+  { to: '/stake', label: 'Stake' },
+  { to: '/quests', label: 'Quests' },
   { to: '/leaderboard', label: 'Leaderboard' },
-  // { to: '/dao', label: 'DAO' },
   { to: '/challenges', label: 'Challenges' },
   { to: '/contributions', label: 'Contributions' },
-  // { to: '/chat', label: 'Chat' },
   { to: '/profile', label: 'Profile' },
-  // { to: '/debug', label: 'Debug' },
 ]
 
 const RootLayout = () => {
@@ -28,7 +26,7 @@ const RootLayout = () => {
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full" style={{backgroundImage: 'linear-gradient(135deg, #E84142, #9B2CFF)'}}/>
-            <span className="font-bold tracking-tight">CodeStake</span>
+            <span className="font-bold tracking-tight">GitStake</span>
           </div>
           <nav className="hidden md:flex items-center gap-4 text-sm">
             {navItems.map((n) => (
@@ -57,7 +55,7 @@ const RootLayout = () => {
       <main className="max-w-7xl mx-auto px-4 py-8">
         <Outlet />
       </main>
-      <footer className="py-8 text-center text-xs text-[var(--muted)]">© {new Date().getFullYear()} CodeStake • Built on Avalanche</footer>
+      <footer className="py-8 text-center text-xs text-[var(--muted)]">© {new Date().getFullYear()} GitStake • Built on Avalanche</footer>
       
       <SearchModal 
         isOpen={showSearch} 
