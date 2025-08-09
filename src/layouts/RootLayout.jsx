@@ -11,7 +11,7 @@ const navItems = [
   { to: '/stake', label: 'Stake' },
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/leaderboard', label: 'Leaderboard' },
-  { to: '/dao', label: 'DAO' },
+  // { to: '/dao', label: 'DAO' },
   { to: '/challenges', label: 'Challenges' },
   { to: '/contributions', label: 'Contributions' },
   // { to: '/chat', label: 'Chat' },

@@ -37,7 +37,7 @@ const App = () => {
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/stake" element={<Stake />} />
                     <Route path="/leaderboard" element={<Leaderboard />} />
-                    <Route path="/dao" element={<DAO />} />
+                    {/* <Route path="/dao" element={<DAO />} /> */}
                     {/* <Route path="/chat" element={<Chat />} /> */}
                     <Route path="/challenges" element={<Challenges />} />
                     <Route path="/contributions" element={<Contributions />} />
