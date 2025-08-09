@@ -38,11 +38,11 @@ const App = () => {
                     <Route path="/stake" element={<Stake />} />
                     <Route path="/leaderboard" element={<Leaderboard />} />
                     <Route path="/dao" element={<DAO />} />
-                    <Route path="/chat" element={<Chat />} />
+                    {/* <Route path="/chat" element={<Chat />} /> */}
                     <Route path="/challenges" element={<Challenges />} />
                     <Route path="/contributions" element={<Contributions />} />
                     <Route path="/profile" element={<Profile />} />
-                    <Route path="/debug" element={<Debug />} />
+                    {/* <Route path="/debug" element={<Debug />} /> */}
                   </Route>
                   <Route path="/auth" element={<Auth />} />
                 </Routes>

@@ -14,9 +14,9 @@ const navItems = [
   { to: '/dao', label: 'DAO' },
   { to: '/challenges', label: 'Challenges' },
   { to: '/contributions', label: 'Contributions' },
-  { to: '/chat', label: 'Chat' },
+  // { to: '/chat', label: 'Chat' },
   { to: '/profile', label: 'Profile' },
-  { to: '/debug', label: 'Debug' },
+  // { to: '/debug', label: 'Debug' },
 ]
 
 const RootLayout = () => {
@@ -40,15 +40,16 @@ const RootLayout = () => {
             ))}
           </nav>
           <div className="flex items-center gap-3">
-            <button
+            {/* <button
               onClick={() => setShowSearch(true)}
               className="p-2 text-gray-400 hover:text-white transition-colors"
               title="Search GitHub"
             >
               <FaSearch />
-            </button>
-            <NotificationSystem />
+            </button> */}
+            {/* <NotificationSystem /> */}
             <span className="hidden sm:inline text-xs text-[var(--muted)]">Avalanche Fuji</span>
+            {/* Wallet connection moved to auth page */}
             <ConnectButton />
           </div>
         </div>

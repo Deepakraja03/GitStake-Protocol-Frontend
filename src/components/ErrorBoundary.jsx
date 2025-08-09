@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaExclamationTriangle, FaRefresh } from 'react-icons/fa';
+import { FaExclamationTriangle, FaRedo } from 'react-icons/fa';
 import GlassCard from './animations/GlassCard';
 
 class ErrorBoundary extends React.Component {
@@ -75,7 +75,7 @@ class ErrorBoundary extends React.Component {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <FaRefresh />
+                  <FaRedo />
                   <span>Reload Page</span>
                 </motion.button>
                 
