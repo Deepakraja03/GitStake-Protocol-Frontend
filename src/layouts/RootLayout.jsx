@@ -10,7 +10,7 @@ import { colors } from '../theme/colors'
 const navItems = [
   { to: '/', label: 'Home' },
   { to: '/dashboard', label: 'Dashboard' },
-  { to: '/stake', label: 'Stake' },
+  // { to: '/stake', label: 'Stake' },
 
   // { to: '/quests', label: 'Quests' },
 

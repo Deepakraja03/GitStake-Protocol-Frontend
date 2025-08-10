@@ -297,7 +297,7 @@ const Stake = () => {
           onConfirm={handleStake}
         />
       </div>
-      <AuthDebug pageName="Stake" />
+      {/* <AuthDebug pageName="Stake" /> */}
     </div>
   );
 };

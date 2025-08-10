@@ -882,7 +882,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-      <AuthDebug pageName="Dashboard" />
+      {/* <AuthDebug pageName="Dashboard" /> */}
     </div>
   );
 };

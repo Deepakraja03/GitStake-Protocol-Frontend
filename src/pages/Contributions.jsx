@@ -473,7 +473,7 @@ const Contributions = () => {
           <RecentActivity />
         </div>
       </div>
-      <AuthDebug pageName="Contributions" />
+      {/* <AuthDebug pageName="Contributions" /> */}
     </div>
   );
 };
