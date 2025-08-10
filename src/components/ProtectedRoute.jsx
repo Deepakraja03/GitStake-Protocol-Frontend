@@ -14,12 +14,14 @@ const ProtectedRoute = ({
   redirectTo = '/auth',
   showAuthPrompt = true 
 }) => {
-  const { 
-    walletConnected, 
-    githubConnected, 
+  const {
+    walletConnected,
+    githubConnected,
     authenticationComplete,
     getMissingAuth,
-    loading 
+    loading,
+    walletAddress,
+    user
   } = useAuthContext();
   
   const navigate = useNavigate();
