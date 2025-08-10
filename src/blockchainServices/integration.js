@@ -122,11 +122,12 @@ export class GitStakeProtocol {
 
   /**
    * Deposit AVAX to the current epoch
-   * @param {string} amount - Amount in AVAX (will be converted to wei)
+   * @param {BigInt|string} amount - Amount in wei (BigInt) or AVAX (string)
    * @returns {Promise<ethers.TransactionResponse>}
    */
   async deposit(amount) {
-    const amountWei = ethers.parseEther(amount);
+    // If amount is a string, convert to wei; if already BigInt, use as-is
+    const amountWei = typeof amount === 'string' ? ethers.parseEther(amount) : amount;
     return await this.epochPrizePool.deposit({ value: amountWei });
   }
 
@@ -242,7 +243,7 @@ export const parseAVAX = (amount) => {
  * @returns {string} Transaction URL
  */
 export const getTransactionUrl = (txHash) => {
-  return `${NETWORK_CONFIG.BLOCK_EXPLORER}/tx/${txHash}`;
+  return `https://testnet.snowscan.xyz/tx/${txHash}`;
 };
 
 // Export all contracts and utilities
