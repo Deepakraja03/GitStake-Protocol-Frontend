@@ -880,49 +880,109 @@ const ChallengeCard = ({ challenge, onSelect, isSelected, userData, onStake, cur
   );
 };
 
-const Arena = ({ challenge, onComplete }) => {
+const Arena = ({ challenge, onComplete, user, userData }) => {
   const [code, setCode] = useState(challenge.starterCode || '');
   const [testResults, setTestResults] = useState([]);
   const [isRunning, setIsRunning] = useState(false);
   const [bossHealth, setBossHealth] = useState(100);
   const [bossState, setBossState] = useState('idle');
   const [backgroundState, setBackgroundState] = useState('idle');
+  const { addToast } = useToast();
 
   const runTests = async () => {
     setIsRunning(true);
     setBackgroundState('idle');
     
-    // Simulate test execution
-    const results = challenge.tests.map((test, index) => {
-      const passed = Math.random() > 0.3; // Simulate test results
-      return { ...test, passed, index };
-    });
-    
-    // Animate test results
-    for (let i = 0; i < results.length; i++) {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      setTestResults(prev => [...prev.slice(0, i), results[i]]);
+    try {
+      // Simulate test execution first
+      const results = challenge.tests.map((test, index) => {
+        const passed = Math.random() > 0.3; // Simulate test results
+        return { ...test, passed, index };
+      });
       
-      if (results[i].passed) {
-        setBossHealth(prev => Math.max(0, prev - (100 / results.length)));
-        setBossState('damaged');
-        setBackgroundState('success');
-        setTimeout(() => {
-          setBossState('idle');
-          setBackgroundState('idle');
-        }, 500);
-      } else {
-        setBackgroundState('error');
-        setTimeout(() => setBackgroundState('idle'), 500);
+      // Animate test results
+      for (let i = 0; i < results.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        setTestResults(prev => [...prev.slice(0, i), results[i]]);
+        
+        if (results[i].passed) {
+          setBossHealth(prev => Math.max(0, prev - (100 / results.length)));
+          setBossState('damaged');
+          setBackgroundState('success');
+          setTimeout(() => {
+            setBossState('idle');
+            setBackgroundState('idle');
+          }, 500);
+        } else {
+          setBackgroundState('error');
+          setTimeout(() => setBackgroundState('idle'), 500);
+        }
       }
-    }
-    
-    setIsRunning(false);
-    
-    const allPassed = results.every(r => r.passed);
-    if (allPassed) {
-      setBossHealth(0);
-      setTimeout(() => onComplete(challenge), 1000);
+      
+      const allPassed = results.every(r => r.passed);
+      
+      // If tests passed, submit solution to API
+      if (allPassed) {
+        setBossHealth(0);
+        
+        try {
+          // Prepare submission data
+          const submissionData = {
+            username: user?.username || 
+                     user?.githubUsername || 
+                     user?.displayName ||
+                     userData?.data?.username || 
+                     'anonymous',
+            email: user?.email ||
+                  userData?.data?.email || 
+                  userData?.data?.githubProfile?.email || 
+                  'user@example.com',
+            solution: code
+          };
+          
+          console.log('Submitting solution for quest:', challenge.id, submissionData);
+          
+          // Call the quest submission API
+          const response = await questService.participation.submitSolution(challenge.id, submissionData);
+          
+          console.log('Solution submitted successfully:', response);
+          
+          addToast({
+            type: 'success',
+            title: 'Solution Submitted!',
+            message: 'Your solution has been submitted successfully.',
+            duration: 5000
+          });
+          
+          setTimeout(() => onComplete(challenge), 1000);
+          
+        } catch (apiError) {
+          console.error('Failed to submit solution:', apiError);
+          
+          addToast({
+            type: 'error',
+            title: 'Submission Failed',
+            message: apiError.message || 'Failed to submit solution. Please try again.',
+            duration: 5000
+          });
+          
+          // Still complete the challenge locally even if API fails
+          setTimeout(() => onComplete(challenge), 1000);
+        }
+      }
+      
+    } catch (error) {
+      console.error('Error running tests:', error);
+      setBackgroundState('error');
+      
+      addToast({
+        type: 'error',
+        title: 'Test Execution Failed',
+        message: 'An error occurred while running tests.',
+        duration: 5000
+      });
+    } finally {
+      setIsRunning(false);
     }
   };
 
@@ -1385,6 +1445,8 @@ const Challenges = () => {
             <Arena
               challenge={selectedChallenge}
               onComplete={handleChallengeComplete}
+              user={user}
+              userData={userData}
             />
           </div>
         ) : (

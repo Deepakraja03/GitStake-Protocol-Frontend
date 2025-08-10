@@ -198,24 +198,36 @@ export const questService = {
      * Submit solution for evaluation
      * @param {string} questId - Quest ID
      * @param {Object} submissionData - Submission data
+     * @param {string} submissionData.username - Username
+     * @param {string} submissionData.email - User email
      * @param {string} submissionData.solution - Solution code/text
-     * @param {string} submissionData.repositoryUrl - Repository URL
-     * @param {string} submissionData.description - Solution description
-     * @param {Array} submissionData.testResults - Test results
+     * @param {string} submissionData.repositoryUrl - Repository URL (optional)
+     * @param {string} submissionData.description - Solution description (optional)
+     * @param {Array} submissionData.testResults - Test results (optional)
      */
     submitSolution: async (questId, submissionData) => {
       if (!questId) {
         throw new Error('Quest ID is required');
       }
       
-      const { solution, repositoryUrl, description, testResults } = submissionData;
+      const { username, email, solution, repositoryUrl, description, testResults } = submissionData;
       
-      if (!solution && !repositoryUrl) {
-        throw new Error('Either solution code or repository URL is required');
+      if (!username) {
+        throw new Error('Username is required');
+      }
+      
+      if (!email) {
+        throw new Error('Email is required');
+      }
+      
+      if (!solution) {
+        throw new Error('Solution code is required');
       }
       
       const payload = {
-        ...(solution && { solution }),
+        username,
+        email,
+        solution,
         ...(repositoryUrl && { repositoryUrl }),
         ...(description && { description }),
         ...(testResults && { testResults })
