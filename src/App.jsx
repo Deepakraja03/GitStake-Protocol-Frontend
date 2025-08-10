@@ -64,12 +64,7 @@ const App = () => {
                         <Contributions />
                       </FullyProtectedRoute>
                     } /> */}
-                    <Route path="/leaderboard" element={
-                      <FullyProtectedRoute>
-                        <Leaderboard />
-                      </FullyProtectedRoute>
-
-                    } />
+                    <Route path="/leaderboard" element={<FullyProtectedRoute><Leaderboard /></FullyProtectedRoute>} />
 
 
 

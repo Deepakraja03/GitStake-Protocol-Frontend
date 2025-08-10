@@ -1,8 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Trophy, TrendingUp, Users, GitCommit, DollarSign, Target, Search, Filter, Crown, Star, Zap } from 'lucide-react';
+import { Trophy, TrendingUp, Users, GitCommit, DollarSign, Target, Search, Filter, Crown, Star, Zap, Code, Award, Medal, GitBranch } from 'lucide-react';
 import CountUp from 'react-countup';
 import { userService } from '../services/userService';
+import { leaderboardService } from '../services/leaderBoard';
+
+// Landing Background Component
+const LandingBackground = () => (
+  <div className="absolute inset-0">
+    <div className="absolute inset-0 bg-gradient-to-br from-[#0B0F1A] via-[#0F1419] to-[#0B0F1A]" />
+    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(232,65,66,0.1),transparent_50%)]" />
+    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(155,44,255,0.1),transparent_50%)]" />
+  </div>
+);
 
 // Loading Screen Component
 const LoadingScreen = () => (
@@ -397,7 +407,7 @@ const PodiumDisplay = ({ leaderboardData }) => {
 };
 
     // Leaderboard Entry Component
-    const LeaderboardEntry = ({ user, rank, isTop3, delay }) => {
+    const LeaderboardEntry = ({ user, rank, delay, currentMetric }) => {
       const getRankIcon = () => {
         if (rank === 1) return <Crown className="text-yellow-400" size={20} />;
         if (rank === 2) return <div className="w-5 h-5 rounded-full bg-gradient-to-r from-gray-300 to-gray-500 flex items-center justify-center text-xs font-bold text-white">2</div>;
