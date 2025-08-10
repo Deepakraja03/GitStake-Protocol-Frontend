@@ -6,6 +6,7 @@ import SearchModal from '../components/SearchModal'
 import NotificationSystem from '../components/NotificationSystem'
 import AuthStatus from '../components/AuthStatus'
 import { colors } from '../theme/colors'
+import logo from '../assets/logo1.png'
 
 const navItems = [
   { to: '/', label: 'Home' },
@@ -27,8 +28,9 @@ const RootLayout = () => {
       <header className="sticky top-0 z-40 backdrop-blur border-b border-white/5 bg-black/20">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full" style={{backgroundImage: 'linear-gradient(135deg, #E84142, #9B2CFF)'}}/>
-            <span className="font-bold tracking-tight">GitStake</span>
+            <div className="flex" />
+            <img src={logo} alt="" className="w-20 h-20" />
+            <span className="font-bold tracking-tight -ml-10">GitStake</span>
           </div>
           <nav className="hidden md:flex items-center gap-4 text-sm">
             {navItems.map((n) => (
