@@ -7,6 +7,8 @@ import { wagmiConfig } from './config/wallet';
 import { AuthProvider } from './context/AuthContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import RootLayout from './layouts/RootLayout';
+import { FullyProtectedRoute, WalletProtectedRoute, GitHubProtectedRoute } from './components/ProtectedRoute';
+import AuthFlow from './components/AuthFlow';
 import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
 import Stake from './pages/Stake';
@@ -24,6 +26,7 @@ import ZyraAssistant from './components/ZyraAssistant';
 
 import '@rainbow-me/rainbowkit/styles.css';
 import GitHubTest from './pages/GitHubTest';
+import AuthTest from './pages/AuthTest';
 
 const queryClient = new QueryClient();
 
@@ -36,20 +39,52 @@ const App = () => {
             <AuthProvider>
               <BrowserRouter>
                 <Routes>
-                  <Route element={<RootLayout />}> 
+                  <Route element={<RootLayout />}>
+                    {/* Public routes */}
                     <Route index element={<Landing />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/stake" element={<Stake />} />
                     <Route path="/leaderboard" element={<Leaderboard />} />
-                    <Route path="/quests" element={<Quests />} />
-                    <Route path="/challenges" element={<Challenges />} />
-                    <Route path="/contributions" element={<Contributions />} />
-                    <Route path="/profile" element={<Profile />} />
+
+                    {/* Routes requiring both wallet and GitHub */}
+                    <Route path="/dashboard" element={
+                      <FullyProtectedRoute>
+                        <Dashboard />
+                      </FullyProtectedRoute>
+                    } />
+                    <Route path="/profile" element={
+                      <FullyProtectedRoute>
+                        <Profile />
+                      </FullyProtectedRoute>
+                    } />
+                    <Route path="/contributions" element={
+                      <FullyProtectedRoute>
+                        <Contributions />
+                      </FullyProtectedRoute>
+                    } />
+
+                    {/* Routes requiring wallet connection */}
+                    <Route path="/stake" element={
+                      <WalletProtectedRoute>
+                        <Stake />
+                      </WalletProtectedRoute>
+                    } />
+                    <Route path="/quests" element={
+                      <WalletProtectedRoute>
+                        <Quests />
+                      </WalletProtectedRoute>
+                    } />
+
+                    {/* Routes requiring GitHub authentication */}
+                    <Route path="/challenges" element={
+                      <GitHubProtectedRoute>
+                        <Challenges />
+                      </GitHubProtectedRoute>
+                    } />
+
+                    {/* Debug/Test routes */}
                     <Route path="/debug" element={<Debug />} />
                     <Route path="/test" element={<TestIntegration />} />
                   </Route>
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="/github-test" element={<GitHubTest />} />
+
                 </Routes>
                 <ZyraAssistant />
               </BrowserRouter>

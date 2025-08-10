@@ -4,17 +4,16 @@ import { FaSearch } from 'react-icons/fa'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import SearchModal from '../components/SearchModal'
 import NotificationSystem from '../components/NotificationSystem'
+import AuthStatus from '../components/AuthStatus'
 import { colors } from '../theme/colors'
 
 const navItems = [
   { to: '/', label: 'Home' },
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/stake', label: 'Stake' },
-  { to: '/quests', label: 'Quests' },
   { to: '/leaderboard', label: 'Leaderboard' },
   { to: '/challenges', label: 'Challenges' },
   { to: '/contributions', label: 'Contributions' },
-  { to: '/profile', label: 'Profile' },
 ]
 
 const RootLayout = () => {
@@ -46,9 +45,13 @@ const RootLayout = () => {
               <FaSearch />
             </button> */}
             {/* <NotificationSystem /> */}
-            <span className="hidden sm:inline text-xs text-[var(--muted)]">Avalanche Fuji</span>
-            {/* Wallet connection moved to auth page */}
-            <ConnectButton />
+            {/* <span className="hidden sm:inline text-xs text-[var(--muted)]">Avalanche Fuji</span> */}
+
+            {/* Authentication Status */}
+            <AuthStatus showDetails={true} />
+
+            {/* Wallet Connection Button */}
+            {/* <ConnectButton /> */}
           </div>
         </div>
       </header>
