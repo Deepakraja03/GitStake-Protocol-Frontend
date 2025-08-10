@@ -27,7 +27,7 @@ export const leaderboardService = {
         page: page.toString()
       }).toString();
 
-      const response = await api.get(`/api/users/leaderboard?${queryParams}`);
+      const response = await api.get(`/users/leaderboard?${queryParams}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching leaderboard:', error);

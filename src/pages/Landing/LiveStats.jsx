@@ -69,7 +69,7 @@ const LiveStats = () => {
     {
       icon: Coins,
       label: 'Total AVAX Staked',
-      value: 125847,
+      value: 17,
       unit: '',
       color: 'bg-gradient-to-r from-[#E84142]/10 to-[#9B2CFF]/10 border border-[#E84142]/20',
       trend: 12.5,
@@ -78,7 +78,7 @@ const LiveStats = () => {
     {
       icon: Users,
       label: 'Active Developers',
-      value: 2847,
+      value: 10,
       unit: '',
       color: 'bg-gradient-to-r from-blue-500/10 to-blue-600/10 border border-blue-500/20',
       trend: 8.3,
@@ -87,7 +87,7 @@ const LiveStats = () => {
     {
       icon: Gift,
       label: 'Rewards Distributed',
-      value: 89234,
+      value: 30,
       unit: 'AVAX',
       color: 'bg-gradient-to-r from-green-500/10 to-green-600/10 border border-green-500/20',
       trend: 15.7,
@@ -96,7 +96,7 @@ const LiveStats = () => {
     {
       icon: Flame,
       label: 'Active Challenges',
-      value: 156,
+      value: 3,
       unit: '',
       color: 'bg-gradient-to-r from-yellow-500/10 to-yellow-600/10 border border-yellow-500/20',
       trend: 5.2,
