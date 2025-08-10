@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Trophy, TrendingUp, Users, GitCommit, DollarSign, Target, Search, Filter, Crown, Star, Zap } from 'lucide-react';
 import CountUp from 'react-countup';
 import { userService } from '../services/userService';
+import AuthDebug from '../components/AuthDebug';
 
 // Loading Screen Component
 const LoadingScreen = () => (
@@ -582,6 +583,7 @@ const LoadingScreen = () => (
             </motion.div>
           </div>
         </div>
+       
       );
     };
 

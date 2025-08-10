@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import AuthDebug from '../components/AuthDebug';
 import {
   Github,
   GitCommit,
@@ -1134,6 +1135,7 @@ const Dashboard = () => {
           )}
         </div>
       </div>
+      <AuthDebug pageName="Dashboard" />
     </div>
   );
 };

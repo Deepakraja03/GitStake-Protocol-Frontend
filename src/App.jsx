@@ -27,6 +27,7 @@ import ZyraAssistant from './components/ZyraAssistant';
 import '@rainbow-me/rainbowkit/styles.css';
 import GitHubTest from './pages/GitHubTest';
 import AuthTest from './pages/AuthTest';
+import AuthStateTest from './pages/AuthStateTest';
 
 const queryClient = new QueryClient();
 
@@ -42,7 +43,6 @@ const App = () => {
                   <Route element={<RootLayout />}>
                     {/* Public routes */}
                     <Route index element={<Landing />} />
-                    <Route path="/leaderboard" element={<Leaderboard />} />
 
                     {/* Routes requiring both wallet and GitHub */}
                     <Route path="/dashboard" element={
@@ -58,6 +58,11 @@ const App = () => {
                     <Route path="/contributions" element={
                       <FullyProtectedRoute>
                         <Contributions />
+                      </FullyProtectedRoute>
+                    } />
+                    <Route path="/leaderboard" element={
+                      <FullyProtectedRoute>
+                        <Leaderboard />
                       </FullyProtectedRoute>
                     } />
 
@@ -83,6 +88,7 @@ const App = () => {
                     {/* Debug/Test routes */}
                     <Route path="/debug" element={<Debug />} />
                     <Route path="/test" element={<TestIntegration />} />
+                    <Route path="/auth-state-test" element={<AuthStateTest />} />
                   </Route>
 
                 </Routes>

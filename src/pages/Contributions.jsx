@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import AuthDebug from '../components/AuthDebug';
 import {
   Github,
   Code2,
@@ -472,6 +473,7 @@ const Contributions = () => {
           <RecentActivity />
         </div>
       </div>
+      <AuthDebug pageName="Contributions" />
     </div>
   );
 };

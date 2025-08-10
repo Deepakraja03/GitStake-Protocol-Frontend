@@ -16,98 +16,141 @@ export const useAuthContext = () => {
 };
 
 export const AuthProvider = ({ children }) => {
+  // Core state
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Wallet connection state
+  // Wallet connection state from wagmi
   const { address, isConnected, chain } = useAccount();
   const { disconnect } = useDisconnect();
 
-  // GitHub authentication state
+  // GitHub authentication state from Firebase
   const { user: firebaseUser, loading: firebaseLoading } = useFirebaseAuth();
 
-  // Authentication states
+  // Derived authentication states (computed from core states)
   const [walletConnected, setWalletConnected] = useState(false);
   const [githubConnected, setGithubConnected] = useState(false);
   const [authenticationComplete, setAuthenticationComplete] = useState(false);
-  const [autoAuthInitiated, setAutoAuthInitiated] = useState(false);
 
-  // Effect to handle wallet connection state
+  // Internal state management
+  const [stateInitialized, setStateInitialized] = useState(false);
+
+  // Centralized authentication state management effect
   useEffect(() => {
-    setWalletConnected(isConnected);
-  }, [isConnected]);
+    console.log('🔄 Auth State Update:', {
+      isConnected,
+      address: address?.slice(0, 6) + '...',
+      firebaseUser: !!firebaseUser,
+      firebaseLoading,
+      chain: chain?.name,
+      timestamp: new Date().toISOString()
+    });
 
-  // Effect to handle GitHub authentication state
-  useEffect(() => {
-    const githubToken = localStorage.getItem("githubAccessToken");
-    setGithubConnected(!!firebaseUser && !!githubToken);
-  }, [firebaseUser]);
-
-  // Auto-authentication initialization effect
-  useEffect(() => {
-    if (!loading && !autoAuthInitiated) {
-      setAutoAuthInitiated(true);
-
-      // Check if user has partial authentication and should be prompted
-      const hasPartialAuth = isConnected || !!firebaseUser;
-      const needsCompletion = hasPartialAuth && !authenticationComplete;
-
-      if (needsCompletion) {
-        // Store a flag to show auth prompts
-        localStorage.setItem('showAuthPrompts', 'true');
-      }
+    // Don't update state while Firebase is still loading
+    if (firebaseLoading) {
+      console.log('⏳ Firebase still loading, skipping state update');
+      setLoading(true);
+      return;
     }
-  }, [loading, autoAuthInitiated, isConnected, firebaseUser, authenticationComplete]);
 
-  // Main authentication effect
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    const userData = localStorage.getItem("userData");
-    const githubToken = localStorage.getItem("githubAccessToken");
+    // Get stored authentication data
+    const storedToken = localStorage.getItem("authToken");
+    const storedUserData = localStorage.getItem("userData");
+    const storedGithubToken = localStorage.getItem("githubAccessToken");
+
+    // Determine wallet connection state
+    const currentWalletConnected = !!isConnected && !!address;
+
+    // Determine GitHub connection state
+    const currentGithubConnected = !!firebaseUser && !!storedGithubToken;
+
+    // Determine if authentication is complete
+    const currentAuthComplete = currentWalletConnected && currentGithubConnected;
+
+    // Update authentication states
+    setWalletConnected(currentWalletConnected);
+    setGithubConnected(currentGithubConnected);
+    setAuthenticationComplete(currentAuthComplete);
 
     // Create comprehensive user object
     let mergedUser = null;
 
-    if (firebaseUser) {
-      // Firebase user is authenticated (GitHub)
+    if (firebaseUser && storedGithubToken) {
+      // GitHub authenticated user
       mergedUser = {
         ...firebaseUser,
-        githubAccessToken: githubToken,
+        githubAccessToken: storedGithubToken,
         walletAddress: address,
-        walletConnected: isConnected,
+        walletConnected: currentWalletConnected,
         chainId: chain?.id,
         chainName: chain?.name,
-        ...(userData ? JSON.parse(userData) : {}),
+        authType: 'github',
+        ...(storedUserData ? JSON.parse(storedUserData) : {}),
       };
-    } else if (token && userData) {
-      // Fallback to traditional auth
-      const storedUser = JSON.parse(userData);
+    } else if (storedToken && storedUserData) {
+      // Traditional auth user
+      const storedUser = JSON.parse(storedUserData);
       mergedUser = {
         ...storedUser,
         walletAddress: address,
-        walletConnected: isConnected,
+        walletConnected: currentWalletConnected,
         chainId: chain?.id,
         chainName: chain?.name,
+        authType: 'traditional',
       };
-    } else if (isConnected) {
-      // Only wallet connected, no GitHub auth
+    } else if (currentWalletConnected) {
+      // Wallet-only user
       mergedUser = {
         walletAddress: address,
-        walletConnected: isConnected,
+        walletConnected: currentWalletConnected,
         chainId: chain?.id,
         chainName: chain?.name,
+        authType: 'wallet-only',
       };
     }
 
+    // Update user state
     setUser(mergedUser);
     setIsAuthenticated(!!mergedUser);
 
-    // Check if both authentications are complete
-    const bothConnected = isConnected && !!firebaseUser && !!githubToken;
-    setAuthenticationComplete(bothConnected);
+    // Handle authentication prompts
+    const hasPartialAuth = currentWalletConnected || currentGithubConnected;
+    const needsCompletion = hasPartialAuth && !currentAuthComplete;
 
-    setLoading(firebaseLoading);
+    if (needsCompletion) {
+      localStorage.setItem('showAuthPrompts', 'true');
+    } else if (currentAuthComplete) {
+      localStorage.removeItem('showAuthPrompts');
+    }
+
+    // Mark as initialized and not loading
+    setStateInitialized(true);
+    setLoading(false);
+
+    console.log('✅ Auth State Updated:', {
+      walletConnected: currentWalletConnected,
+      githubConnected: currentGithubConnected,
+      authComplete: currentAuthComplete,
+      userType: mergedUser?.authType || 'none',
+      timestamp: new Date().toISOString()
+    });
+
+    // Validate state consistency
+    const expectedWallet = !!isConnected && !!address;
+    const expectedGithub = !!firebaseUser && !!storedGithubToken;
+    const expectedComplete = expectedWallet && expectedGithub;
+
+    if (currentWalletConnected !== expectedWallet ||
+        currentGithubConnected !== expectedGithub ||
+        currentAuthComplete !== expectedComplete) {
+      console.warn('⚠️ State inconsistency detected:', {
+        wallet: { current: currentWalletConnected, expected: expectedWallet },
+        github: { current: currentGithubConnected, expected: expectedGithub },
+        complete: { current: currentAuthComplete, expected: expectedComplete }
+      });
+    }
+
   }, [firebaseUser, firebaseLoading, address, isConnected, chain]);
 
   const login = async (credentials) => {
@@ -191,20 +234,12 @@ export const AuthProvider = ({ children }) => {
 
   const disconnectWallet = async () => {
     try {
+      console.log('🔌 Disconnecting wallet...');
       disconnect();
-      setWalletConnected(false);
 
-      // Update user object to remove wallet info
-      if (user) {
-        const updatedUser = { ...user };
-        delete updatedUser.walletAddress;
-        delete updatedUser.walletConnected;
-        delete updatedUser.chainId;
-        delete updatedUser.chainName;
-        setUser(updatedUser);
-      }
+      // The main useEffect will handle state updates automatically
+      // when isConnected becomes false
 
-      setAuthenticationComplete(false);
     } catch (error) {
       console.error("Wallet disconnect error:", error);
     }
@@ -212,53 +247,97 @@ export const AuthProvider = ({ children }) => {
 
   const disconnectGitHub = async () => {
     try {
+      console.log('🔌 Disconnecting GitHub...');
+
+      // Sign out from Firebase
       await signOutUser();
+
+      // Clear stored data
       localStorage.removeItem('userData');
       localStorage.removeItem('githubAccessToken');
 
-      setGithubConnected(false);
+      // The main useEffect will handle state updates automatically
+      // when firebaseUser becomes null
 
-      // Update user object to remove GitHub info
-      if (user) {
-        const updatedUser = { ...user };
-        delete updatedUser.uid;
-        delete updatedUser.email;
-        delete updatedUser.displayName;
-        delete updatedUser.photoURL;
-        delete updatedUser.username;
-        delete updatedUser.githubAccessToken;
-        setUser(updatedUser);
-      }
-
-      setAuthenticationComplete(false);
     } catch (error) {
       console.error("GitHub disconnect error:", error);
     }
   };
 
   const disconnectAll = async () => {
-    await Promise.all([
-      disconnectWallet(),
-      disconnectGitHub(),
-      logout()
-    ]);
+    try {
+      console.log('🔌 Disconnecting all authentication...');
+
+      // Clear all stored data first
+      localStorage.removeItem('userData');
+      localStorage.removeItem('githubAccessToken');
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('showAuthPrompts');
+      localStorage.removeItem('lastAuthCheck');
+      localStorage.removeItem('authComplete');
+
+      // Reset all states immediately
+      setUser(null);
+      setIsAuthenticated(false);
+      setWalletConnected(false);
+      setGithubConnected(false);
+      setAuthenticationComplete(false);
+      setLoading(false);
+
+      // Disconnect wallet and GitHub (these will trigger the useEffect to update states)
+      await Promise.all([
+        signOutUser().catch(console.error),
+        disconnect()
+      ]);
+
+      console.log('✅ All authentication disconnected');
+
+    } catch (error) {
+      console.error("Disconnect all error:", error);
+    }
+  };
+
+  // Force refresh authentication state
+  const refreshAuthState = () => {
+    console.log('🔄 Force refreshing auth state...');
+
+    // Get current values
+    const currentWalletConnected = !!isConnected && !!address;
+    const currentGithubConnected = !!firebaseUser && !!localStorage.getItem("githubAccessToken");
+    const currentAuthComplete = currentWalletConnected && currentGithubConnected;
+
+    // Force update states
+    setWalletConnected(currentWalletConnected);
+    setGithubConnected(currentGithubConnected);
+    setAuthenticationComplete(currentAuthComplete);
+
+    console.log('✅ Auth state refreshed:', {
+      wallet: currentWalletConnected,
+      github: currentGithubConnected,
+      complete: currentAuthComplete
+    });
   };
 
   const value = {
-    // User data and states
+    // Core user data and states
     user,
     loading,
     isAuthenticated,
 
-    // Authentication states
+    // Authentication states (always current and synchronized)
     walletConnected,
     githubConnected,
     authenticationComplete,
 
-    // Wallet info
+    // Wallet info (directly from wagmi)
     walletAddress: address,
     chainId: chain?.id,
     chainName: chain?.name,
+    isWalletConnected: isConnected, // Direct wagmi state
+
+    // Firebase info
+    firebaseUser,
+    firebaseLoading,
 
     // Authentication methods
     login,
@@ -267,12 +346,13 @@ export const AuthProvider = ({ children }) => {
     disconnectWallet,
     disconnectGitHub,
     disconnectAll,
+    refreshAuthState,
 
     // GitHub methods
     analyzeGitHubUser,
     getUserAnalytics,
 
-    // Utility methods
+    // Utility methods (use with caution - prefer letting useEffect handle state)
     setUser,
     setIsAuthenticated,
 
@@ -281,12 +361,14 @@ export const AuthProvider = ({ children }) => {
     requiresGitHub: () => githubConnected,
     requiresBoth: () => authenticationComplete,
 
-    // Authentication status helpers
+    // Authentication status helpers (always current)
     getAuthStatus: () => ({
       wallet: walletConnected,
       github: githubConnected,
       complete: authenticationComplete,
-      user: !!user
+      user: !!user,
+      loading,
+      initialized: stateInitialized
     }),
 
     // Check what's missing for complete auth
@@ -313,7 +395,26 @@ export const AuthProvider = ({ children }) => {
         return true;
       }
       return false;
-    }
+    },
+
+    // Debug helpers
+    getDebugInfo: () => ({
+      walletConnected,
+      githubConnected,
+      authenticationComplete,
+      isConnected,
+      firebaseUser: !!firebaseUser,
+      firebaseLoading,
+      address,
+      chain: chain?.name,
+      userType: user?.authType,
+      localStorage: {
+        userData: !!localStorage.getItem('userData'),
+        githubToken: !!localStorage.getItem('githubAccessToken'),
+        authToken: !!localStorage.getItem('authToken'),
+        showPrompts: localStorage.getItem('showAuthPrompts')
+      }
+    })
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

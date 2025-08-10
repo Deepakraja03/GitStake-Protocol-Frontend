@@ -5,6 +5,7 @@ import MonacoEditor from 'react-monaco-editor';
 import CountUp from 'react-countup';
 import { useAuthContext as useAuth } from '../context/AuthContext';
 import { useUserAnalytics } from '../hooks/useApi';
+import AuthDebug from '../components/AuthDebug';
 
 // Loading Screen Component
 const LoadingScreen = () => (
@@ -545,6 +546,7 @@ const Challenges = () => {
           </div>
         )}
       </div>
+      <AuthDebug pageName="Challenges" />
     </div>
   );
 };

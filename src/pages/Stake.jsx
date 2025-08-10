@@ -5,6 +5,7 @@ import SpinningCoin from '../components/3d/SpinningCoin';
 import GlassCard from '../components/animations/GlassCard';
 import AnimatedCounter from '../components/animations/AnimatedCounter';
 import TypingText from '../components/animations/TypingText';
+import AuthDebug from '../components/AuthDebug';
 
 const AmountSlider = ({ value, onChange, max = 1000, apy = 12.5 }) => {
   const [isAdjusting, setIsAdjusting] = useState(false);
@@ -296,6 +297,7 @@ const Stake = () => {
           onConfirm={handleStake}
         />
       </div>
+      <AuthDebug pageName="Stake" />
     </div>
   );
 };

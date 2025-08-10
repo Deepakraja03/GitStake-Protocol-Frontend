@@ -27,7 +27,8 @@ const AuthTest = () => {
     disconnectAll,
     shouldShowAuthPrompts,
     clearAuthPrompts,
-    initializeAuth
+    initializeAuth,
+    getDebugInfo
   } = useAuthContext();
 
   // Test different auth requirements
@@ -101,7 +102,29 @@ const AuthTest = () => {
       details: hasStoredData ? 'Auth data stored in localStorage' : 'No stored auth data'
     });
 
-    // Test 7: Auth Prompts
+    // Test 7: State Consistency
+    const debugInfo = getDebugInfo();
+    const walletConsistent = walletConnected === debugInfo.isConnected;
+    const githubConsistent = githubConnected === !!debugInfo.firebaseUser;
+    results.push({
+      test: 'State Consistency',
+      status: (walletConsistent && githubConsistent) ? 'PASS' : 'FAIL',
+      details: `Wallet: ${walletConnected}/${debugInfo.isConnected}, GitHub: ${githubConnected}/${!!debugInfo.firebaseUser}`
+    });
+
+    // Test 8: Hook Consistency
+    const hookConsistent = (
+      fullAuth.isAuthenticated === authenticationComplete &&
+      walletAuth.isAuthenticated === walletConnected &&
+      githubAuth.isAuthenticated === githubConnected
+    );
+    results.push({
+      test: 'Hook Consistency',
+      status: hookConsistent ? 'PASS' : 'FAIL',
+      details: `Full: ${fullAuth.isAuthenticated}/${authenticationComplete}, Wallet: ${walletAuth.isAuthenticated}/${walletConnected}, GitHub: ${githubAuth.isAuthenticated}/${githubConnected}`
+    });
+
+    // Test 9: Auth Prompts
     results.push({
       test: 'Auth Prompts System',
       status: shouldShowAuthPrompts() ? 'ACTIVE' : 'INACTIVE',
@@ -284,22 +307,34 @@ const AuthTest = () => {
             <h2 className="text-2xl font-semibold text-white mb-4">Debug Information</h2>
             <pre className="bg-black/30 p-4 rounded-lg text-sm text-gray-300 overflow-auto">
               {JSON.stringify({
+                // Current Auth Status
+                currentStatus: {
+                  walletConnected,
+                  githubConnected,
+                  authenticationComplete,
+                  isAuthenticated,
+                  loading
+                },
+
+                // Debug Information
+                debugInfo: getDebugInfo(),
+
+                // Auth Status Helper
                 authStatus: getAuthStatus(),
                 missingAuth: getMissingAuth(),
+
+                // User Object
                 user: user ? {
                   uid: user.uid,
                   email: user.email,
                   displayName: user.displayName,
                   username: user.username,
                   walletAddress: user.walletAddress,
+                  authType: user.authType,
                   hasGithubToken: !!user.githubAccessToken
                 } : null,
-                localStorage: {
-                  userData: !!localStorage.getItem('userData'),
-                  githubToken: !!localStorage.getItem('githubAccessToken'),
-                  authToken: !!localStorage.getItem('authToken'),
-                  showPrompts: localStorage.getItem('showAuthPrompts')
-                },
+
+                // Hook States
                 hooks: {
                   fullAuth: fullAuth.isAuthenticated,
                   walletAuth: walletAuth.isAuthenticated,
