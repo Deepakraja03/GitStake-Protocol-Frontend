@@ -117,8 +117,14 @@ const ReactiveBackground = ({ success = false, error = false }) => {
 };
 
 // Utility function to check if user has already staked in this challenge
-const hasUserStaked = (challenge, userData) => {
-  const currentUsername = userData?.data?.username || 'manicdon7';
+const hasUserStaked = (challenge, userData, currentUser) => {
+  // Try to get username from multiple sources in order of preference
+  const currentUsername = currentUser?.username || 
+                         currentUser?.githubUsername || 
+                         currentUser?.displayName ||
+                         userData?.data?.username || 
+                         'anonymous';
+  
   const stakedParticipants = challenge.participants?.staked || [];
   
   // Check if user's username is in the staked participants array
@@ -128,8 +134,8 @@ const hasUserStaked = (challenge, userData) => {
 };
 
 // Modal Component for Description
-const DescriptionModal = ({ isOpen, onClose, challenge, userData, onStakeClick }) => {
-  const userHasStaked = hasUserStaked(challenge, userData);
+const DescriptionModal = ({ isOpen, onClose, challenge, userData, onStakeClick, currentUser }) => {
+  const userHasStaked = hasUserStaked(challenge, userData, currentUser);
   
   if (!isOpen) return null;
 
@@ -302,11 +308,12 @@ DescriptionModal.propTypes = {
   onClose: PropTypes.func.isRequired,
   challenge: PropTypes.object.isRequired,
   userData: PropTypes.object,
-  onStakeClick: PropTypes.func
+  onStakeClick: PropTypes.func,
+  currentUser: PropTypes.object
 };
 
 // Staking Confirmation Modal Component
-const StakingModal = ({ isOpen, onClose, challenge, userData, onStakeConfirm }) => {
+const StakingModal = ({ isOpen, onClose, challenge, userData, onStakeConfirm, currentUser }) => {
   const [stakeAmount, setStakeAmount] = useState('0.1');
   const [currency, setCurrency] = useState('AVAX');
   const [isStaking, setIsStaking] = useState(false);
@@ -452,8 +459,15 @@ const StakingModal = ({ isOpen, onClose, challenge, userData, onStakeConfirm }) 
         transactionHash: receipt.transactionHash,
         blockNumber: receipt.blockNumber,
         userInfo: {
-          username: userData?.data?.username || 'manicdon7',
-          email: userData?.data?.email || userData?.data?.githubProfile?.email || 'manicdon7@example.com',
+          username: currentUser?.username || 
+                   currentUser?.githubUsername || 
+                   currentUser?.displayName ||
+                   userData?.data?.username || 
+                   'anonymous',
+          email: currentUser?.email ||
+                userData?.data?.email || 
+                userData?.data?.githubProfile?.email || 
+                'user@example.com',
           developerLevel: userData?.data?.developerLevel?.level || 'ROOKIE'
         }
       };
@@ -605,7 +619,11 @@ const StakingModal = ({ isOpen, onClose, challenge, userData, onStakeConfirm }) 
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-400 font-['JetBrains_Mono']">Username</span>
                 <span className="text-green-400 font-['JetBrains_Mono']">
-                  {userData?.data?.username || 'manicdon7'}
+                  {currentUser?.username || 
+                   currentUser?.githubUsername || 
+                   currentUser?.displayName ||
+                   userData?.data?.username || 
+                   'anonymous'}
                 </span>
               </div>
               <div className="flex items-center justify-between">
@@ -666,13 +684,14 @@ StakingModal.propTypes = {
   onClose: PropTypes.func.isRequired,
   challenge: PropTypes.object.isRequired,
   userData: PropTypes.object,
-  onStakeConfirm: PropTypes.func.isRequired
+  onStakeConfirm: PropTypes.func.isRequired,
+  currentUser: PropTypes.object
 };
 
-const ChallengeCard = ({ challenge, onSelect, isSelected, userData, onStake }) => {
+const ChallengeCard = ({ challenge, onSelect, isSelected, userData, onStake, currentUser }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isStakingModalOpen, setIsStakingModalOpen] = useState(false);
-  const userHasStaked = hasUserStaked(challenge, userData);
+  const userHasStaked = hasUserStaked(challenge, userData, currentUser);
   
   // Truncate description to 100 characters
   const truncateText = (text, maxLength = 100) => {
@@ -834,6 +853,7 @@ const ChallengeCard = ({ challenge, onSelect, isSelected, userData, onStake }) =
         onClose={() => setIsModalOpen(false)} 
         challenge={challenge}
         userData={userData}
+        currentUser={currentUser}
         onStakeClick={() => {
           if (!userHasStaked) {
             setIsStakingModalOpen(true);
@@ -847,6 +867,7 @@ const ChallengeCard = ({ challenge, onSelect, isSelected, userData, onStake }) =
         onClose={() => setIsStakingModalOpen(false)}
         challenge={challenge}
         userData={userData}
+        currentUser={currentUser}
         onStakeConfirm={(challenge, stakeData, apiResponse) => {
           console.log('Staking confirmed:', { challenge, stakeData, apiResponse });
           if (onStake) {
@@ -1106,13 +1127,25 @@ const Challenges = () => {
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1500);
     
-    // Fetch user data for manicdon7
+    // Fetch user data dynamically based on current user
     const fetchUserData = async () => {
       try {
         setIsUserDataLoading(true);
+        
+        // Get current username from user object
+        const currentUsername = user?.username || 
+                               user?.githubUsername || 
+                               user?.displayName;
+        
+        if (!currentUsername) {
+          console.log('No username available, skipping user data fetch');
+          setIsUserDataLoading(false);
+          return;
+        }
+        
         // You can replace this with your actual base URL
         const baseUrl = 'https://git-stake-protocol-backend.vercel.app'; // Adjust this to your backend URL
-        const response = await fetch(`${baseUrl}/api/users/manicdon7`);
+        const response = await fetch(`${baseUrl}/api/users/${currentUsername}`);
         
         if (response.ok) {
           const userData = await response.json();
@@ -1130,7 +1163,7 @@ const Challenges = () => {
     fetchUserData();
     
     return () => clearTimeout(timer);
-  }, []);
+  }, [user]); // Add user as dependency so it refetches when user changes
 
   
   // Transform quest data to match component expectations
@@ -1471,6 +1504,7 @@ const Challenges = () => {
                       onSelect={setSelectedChallenge}
                       isSelected={false}
                       userData={userData}
+                      currentUser={user}
                       onStake={handleStakeConfirm}
                     />
                   </motion.div>
