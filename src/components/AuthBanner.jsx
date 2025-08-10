@@ -136,14 +136,7 @@ const AuthBanner = ({
             )}
 
             {/* Complete Auth Button */}
-            {missingCount > 0 && (
-              <button
-                onClick={handleCompleteAuth}
-                className="flex items-center gap-1 px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded transition-colors"
-              >
-                Complete Setup <FaArrowRight className="text-xs" />
-              </button>
-            )}
+            
 
             {/* Dismiss Button */}
             {dismissible && !persistent && (

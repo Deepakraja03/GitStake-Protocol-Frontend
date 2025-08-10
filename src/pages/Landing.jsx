@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthContext } from '../context/AuthContext';
 import useAutoAuth from '../hooks/useAutoAuth';
-import AuthBanner from '../components/AuthBanner';
 import Hero from './Landing/Hero';
 import HowItWorks from './Landing/HowItWorks';
 import LiveStats from './Landing/LiveStats';
@@ -34,16 +33,7 @@ const Landing = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 1 }}
     >
-      {/* Authentication Banner */}
-      {showAuthBanner && (
-        <div className="max-w-7xl mx-auto px-4 pt-4">
-          <AuthBanner
-            requireBoth={true}
-            dismissible={true}
-            className="mb-0"
-          />
-        </div>
-      )}
+     
 
       <Suspense fallback={<div>Loading...</div>}>
         <Hero />

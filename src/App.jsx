@@ -92,7 +92,7 @@ const App = () => {
 
                     {/* Debug/Test routes */}
 
-                    <Route path="/debug" element={<Debug />} />
+                    {/* <Route path="/debug" element={<Debug />} /> */}
                     <Route path="/test" element={<TestIntegration />} />
                     <Route path="/auth-state-test" element={<AuthStateTest />} />
                   </Route>
