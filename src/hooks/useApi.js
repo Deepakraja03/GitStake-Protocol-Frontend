@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { userAPI, githubAPI, chatAPI, emailAPI, authAPI } from '../services';
+import { userAPI, githubAPI, chatAPI, emailAPI, authAPI, questService } from '../services';
 
 // Generic API hook
 export const useApi = (apiCall, dependencies = []) => {
@@ -77,6 +77,11 @@ export const useGitHubTrends = (username) => {
 // Chat Assistant Hook
 export const useChatHealth = () => {
   return useApi(() => chatAPI.assistant.getHealthStatus());
+};
+
+// Quest Hooks
+export const useActiveQuests = (developerLevel = null) => {
+  return useApi(() => questService.management.getActiveQuests({ developerLevel }), [developerLevel]);
 };
 
 // Custom hooks for mutations

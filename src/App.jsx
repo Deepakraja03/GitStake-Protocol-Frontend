@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { wagmiConfig } from './config/wallet';
 import { AuthProvider } from './context/AuthContext';
 import ErrorBoundary from './components/ErrorBoundary';
+import { ToastProvider } from './components/ToastSystem';
 import RootLayout from './layouts/RootLayout';
 import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
@@ -30,11 +31,12 @@ const queryClient = new QueryClient();
 const App = () => {
   return (
     <ErrorBoundary>
-      <WagmiProvider config={wagmiConfig}>
-        <QueryClientProvider client={queryClient}>
-          <RainbowKitProvider>
-            <AuthProvider>
-              <BrowserRouter>
+      <ToastProvider>
+        <WagmiProvider config={wagmiConfig}>
+          <QueryClientProvider client={queryClient}>
+            <RainbowKitProvider>
+              <AuthProvider>
+                <BrowserRouter>
                 <Routes>
                   <Route element={<RootLayout />}> 
                     <Route index element={<Landing />} />
@@ -52,11 +54,12 @@ const App = () => {
                   <Route path="/github-test" element={<GitHubTest />} />
                 </Routes>
                 <ZyraAssistant />
-              </BrowserRouter>
-            </AuthProvider>
-          </RainbowKitProvider>
-        </QueryClientProvider>
-      </WagmiProvider>
+                </BrowserRouter>
+              </AuthProvider>
+            </RainbowKitProvider>
+          </QueryClientProvider>
+        </WagmiProvider>
+      </ToastProvider>
     </ErrorBoundary>
   );
 };

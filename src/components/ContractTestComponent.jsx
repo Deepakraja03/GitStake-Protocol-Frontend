@@ -28,9 +28,9 @@ const STATIC_TEST_DATA = {
     prize: '2.3'
   },
   testTransactions: [
-    'https://testnet.snowtrace.io/tx/0xebfd28015936ed9d95c2c3b0eb0cc08b74ba4559319900346d062fe66a1d87f4',
-    'https://testnet.snowtrace.io/address/0xbE7BC82d2E16b3d139C96A26a8Ac3d61ce290694',
-    'https://testnet.snowtrace.io/address/0xe9782b8942D563210C7a36F2B309939A8ae08509'
+    'https://testnet.snowscan.xyz/tx/0xebfd28015936ed9d95c2c3b0eb0cc08b74ba4559319900346d062fe66a1d87f4',
+    'https://testnet.snowscan.xyz/address/0xbE7BC82d2E16b3d139C96A26a8Ac3d61ce290694',
+    'https://testnet.snowscan.xyz/address/0xe9782b8942D563210C7a36F2B309939A8ae08509'
   ]
 };
 
@@ -141,8 +141,8 @@ const ContractTestComponent = () => {
       // Wait for transaction confirmation
       const receipt = await tx.wait();
       setTransactionStatus('Deposit successful! Receipt: ' + 
-        `<a href="https://testnet.snowtrace.io/tx/${receipt.transactionHash}" target="_blank" rel="noopener noreferrer">` + 
-        receipt.transactionHash + '</a>');      
+        `<a href="https://testnet.snowscan.xyz/tx/${receipt.transactionHash}" target="_blank" rel="noopener noreferrer">` + 
+        receipt.transactionHash + '</a>');
       
       // Refresh user stake after deposit
       fetchUserStake();
@@ -363,7 +363,7 @@ const ContractTestComponent = () => {
               <div key={name} className="flex justify-between items-center">
                 <span className="text-gray-400 text-sm">{name}:</span>
                 <button
-                  onClick={() => openInSnowTrace(`https://testnet.snowtrace.io/address/${address}`)}
+                  onClick={() => openInSnowTrace(`https://testnet.snowscan.xyz/address/${address}`)}
                   className="text-blue-400 hover:text-blue-300 text-sm font-mono transition-colors"
                 >
                   {address.slice(0, 8)}...{address.slice(-6)}

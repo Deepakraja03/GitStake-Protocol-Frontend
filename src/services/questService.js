@@ -69,19 +69,19 @@ export const questService = {
     /**
      * Get active quests with filtering
      * @param {Object} filters - Quest filters
-     * @param {number} filters.level - Filter by level
+     * @param {string} filters.developerLevel - Filter by developer level
      * @param {string} filters.status - Filter by status
      * @param {string} filters.category - Filter by category
      * @param {number} filters.page - Page number
      * @param {number} filters.limit - Items per page
      */
     getActiveQuests: async (filters = {}) => {
-      const { level, status, category, page = 1, limit = 10 } = filters;
+      const { developerLevel, status, category, page = 1, limit = 10 } = filters;
       
       const queryParams = new URLSearchParams({
         page: page.toString(),
         limit: limit.toString(),
-        ...(level && { level: level.toString() }),
+        ...(developerLevel && { developerLevel }),
         ...(status && { status }),
         ...(category && { category })
       });
@@ -152,22 +152,38 @@ export const questService = {
      * @param {string} stakeData.walletAddress - User's crypto wallet
      * @param {number} stakeData.stakeAmount - Amount to stake
      * @param {string} stakeData.currency - Stake currency
+     * @param {string} stakeData.transactionHash - Blockchain transaction hash
+     * @param {number} stakeData.blockNumber - Block number
+     * @param {Object} stakeData.userInfo - User information
+     * @param {string} stakeData.userInfo.username - Username
+     * @param {string} stakeData.userInfo.email - User email
+     * @param {string} stakeData.userInfo.developerLevel - Developer level
      */
     stakeForQuest: async (questId, stakeData) => {
       if (!questId) {
         throw new Error('Quest ID is required');
       }
       
-      const { walletAddress, stakeAmount, currency } = stakeData;
+      const { walletAddress, stakeAmount, currency, transactionHash, blockNumber, userInfo } = stakeData;
       
       if (!walletAddress || !stakeAmount) {
         throw new Error('Wallet address and stake amount are required');
       }
       
+      // Validate userInfo fields as required by backend
+      if (!userInfo?.username || !userInfo?.email || !userInfo?.developerLevel) {
+        throw new Error('Username, email, and developer level are required');
+      }
+      
       const payload = {
         walletAddress,
         stakeAmount,
-        ...(currency && { currency })
+        currency: currency || 'AVAX',
+        ...(transactionHash && { transactionHash }),
+        ...(blockNumber && { blockNumber }),
+        username: userInfo.username,
+        email: userInfo.email,
+        developerLevel: userInfo.developerLevel
       };
       
       try {
