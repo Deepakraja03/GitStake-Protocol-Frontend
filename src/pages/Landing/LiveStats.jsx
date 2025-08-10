@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaCoins, FaUsers, FaGift, FaChartLine, FaFire } from 'react-icons/fa';
+import { Coins, Users, Gift, TrendingUp, Flame } from 'lucide-react';
 
 const AnimatedCounter = ({ value, duration = 2000 }) => {
   const [count, setCount] = useState(0);
+  const [hasAnimated, setHasAnimated] = useState(false);
 
   useEffect(() => {
+    if (hasAnimated) return; // Only animate once
+
     let start = 0;
     const end = parseInt(value);
     if (start === end) return;
@@ -16,154 +19,117 @@ const AnimatedCounter = ({ value, duration = 2000 }) => {
     const timer = setInterval(() => {
       start += 1;
       setCount(start);
-      if (start === end) clearInterval(timer);
+      if (start === end) {
+        clearInterval(timer);
+        setHasAnimated(true);
+      }
     }, incrementTime);
 
     return () => clearInterval(timer);
-  }, [value, duration]);
+  }, [value, duration, hasAnimated]);
 
   return count;
 };
 
 const StatCard = ({ icon: Icon, label, value, unit, color, trend, delay }) => (
   <motion.div
-    className="backdrop-blur-md bg-white/5 border border-white/10 rounded-3xl p-8 text-center relative overflow-hidden group"
-    initial={{ opacity: 0, y: 50 }}
+    className="backdrop-blur-xl bg-white/[0.02] border border-white/[0.05] rounded-xl p-6 text-center hover:bg-white/[0.04] transition-all duration-300"
+    initial={{ opacity: 0, y: 30 }}
     whileInView={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.8, delay }}
-    whileHover={{ y: -5, scale: 1.02 }}
+    transition={{ duration: 0.6, delay }}
+    viewport={{ once: true }}
   >
-    {/* Background gradient */}
-    <div className={`absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300 ${color}`}></div>
-
     {/* Icon */}
-    <motion.div
-      className={`w-16 h-16 rounded-2xl ${color} flex items-center justify-center mx-auto mb-6`}
-      whileHover={{ rotate: 5, scale: 1.1 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-    >
-      <Icon className="text-2xl text-white" />
-    </motion.div>
+    <div className={`w-12 h-12 rounded-lg ${color} flex items-center justify-center mx-auto mb-4`}>
+      <Icon size={24} className="text-white" />
+    </div>
 
     {/* Value */}
-    <motion.div
-      className="text-4xl font-bold mb-2"
-      initial={{ scale: 0 }}
-      whileInView={{ scale: 1 }}
-      transition={{ duration: 0.5, delay: delay + 0.2 }}
-    >
+    <div className="text-3xl font-bold mb-2 font-['Fira_Code'] text-white">
       <AnimatedCounter value={value} />
-      <span className="text-2xl ml-1 text-gray-400">{unit}</span>
-    </motion.div>
+      {unit && <span className="text-xl ml-1 text-gray-400">{unit}</span>}
+    </div>
 
     {/* Label */}
-    <p className="text-gray-400 mb-4">{label}</p>
+    <p className="text-gray-400 mb-3 font-['Fira_Sans'] text-sm">{label}</p>
 
     {/* Trend */}
     {trend && (
-      <div className="flex items-center justify-center gap-2 text-green-400 text-sm">
-        <FaChartLine />
-        <span>+{trend}% this week</span>
+      <div className="flex items-center justify-center gap-1 text-green-400 text-xs">
+        <TrendingUp size={12} />
+        <span className="font-['Fira_Code']">+{trend}%</span>
       </div>
     )}
-
-    {/* Decorative elements */}
-    <div className="absolute top-4 right-4 w-2 h-2 bg-white/20 rounded-full"></div>
-    <div className="absolute bottom-4 left-4 w-1 h-1 bg-white/30 rounded-full"></div>
   </motion.div>
 );
 
 const LiveStats = () => {
-  const [liveStats, setLiveStats] = useState({
-    staked: 125847,
-    developers: 2847,
-    rewards: 89234,
-    challenges: 156
-  });
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setLiveStats(prev => ({
-        staked: prev.staked + Math.floor(Math.random() * 50),
-        developers: prev.developers + Math.floor(Math.random() * 3),
-        rewards: prev.rewards + Math.floor(Math.random() * 25),
-        challenges: prev.challenges + (Math.random() > 0.9 ? 1 : 0)
-      }));
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, []);
-
+  // Static stats - no continuous updates for professional look
   const stats = [
     {
-      icon: FaCoins,
+      icon: Coins,
       label: 'Total AVAX Staked',
-      value: liveStats.staked,
+      value: 125847,
       unit: '',
-      color: 'bg-gradient-to-r from-[#E84142] to-[#9B2CFF]',
+      color: 'bg-gradient-to-r from-[#E84142]/10 to-[#9B2CFF]/10 border border-[#E84142]/20',
       trend: 12.5,
       delay: 0.1
     },
     {
-      icon: FaUsers,
+      icon: Users,
       label: 'Active Developers',
-      value: liveStats.developers,
+      value: 2847,
       unit: '',
-      color: 'bg-gradient-to-r from-blue-500 to-blue-600',
+      color: 'bg-gradient-to-r from-blue-500/10 to-blue-600/10 border border-blue-500/20',
       trend: 8.3,
       delay: 0.2
     },
     {
-      icon: FaGift,
+      icon: Gift,
       label: 'Rewards Distributed',
-      value: liveStats.rewards,
+      value: 89234,
       unit: 'AVAX',
-      color: 'bg-gradient-to-r from-green-500 to-green-600',
+      color: 'bg-gradient-to-r from-green-500/10 to-green-600/10 border border-green-500/20',
       trend: 15.7,
       delay: 0.3
     },
     {
-      icon: FaFire,
+      icon: Flame,
       label: 'Active Challenges',
-      value: liveStats.challenges,
+      value: 156,
       unit: '',
-      color: 'bg-gradient-to-r from-yellow-500 to-yellow-600',
+      color: 'bg-gradient-to-r from-yellow-500/10 to-yellow-600/10 border border-yellow-500/20',
       trend: 5.2,
       delay: 0.4
     }
   ];
 
   return (
-    <section className="py-20 px-4">
+    <section className="py-20 px-6">
       <div className="max-w-7xl mx-auto">
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-12"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-sm mb-6">
-            <FaChartLine className="text-[#E84142]" />
-            <span>Live Statistics</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.05] border border-white/[0.1] text-sm mb-6">
+            <TrendingUp size={16} className="text-[#E84142]" />
+            <span className="font-['Fira_Code'] text-gray-300">Platform Statistics</span>
           </div>
 
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-              Platform
-            </span>
-            <br />
-            <span className="bg-gradient-to-r from-[#E84142] to-[#9B2CFF] bg-clip-text text-transparent">
-              Statistics
-            </span>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 font-['Fira_Code'] text-white">
+            Platform Statistics
           </h2>
 
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Real-time data showing the growth and activity of our developer community.
+          <p className="text-lg text-gray-400 max-w-3xl mx-auto font-['Fira_Sans']">
+            Key metrics showing the growth and activity of our developer community.
           </p>
         </motion.div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
           {stats.map((stat, index) => (
             <StatCard key={index} {...stat} />
           ))}
@@ -171,24 +137,25 @@ const LiveStats = () => {
 
         {/* Additional Info */}
         <motion.div
-          className="text-center mt-16"
+          className="text-center"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          viewport={{ once: true }}
         >
-          <div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-3xl p-8 max-w-4xl mx-auto">
+          <div className="backdrop-blur-xl bg-white/[0.02] border border-white/[0.05] rounded-xl p-8 max-w-4xl mx-auto">
             <div className="grid md:grid-cols-3 gap-8 text-center">
               <div>
-                <div className="text-2xl font-bold text-green-400 mb-2">99.9%</div>
-                <div className="text-gray-400">Uptime</div>
+                <div className="text-2xl font-bold text-green-400 mb-2 font-['Fira_Code']">99.9%</div>
+                <div className="text-gray-400 font-['Fira_Sans'] text-sm">Uptime</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-blue-400 mb-2">24/7</div>
-                <div className="text-gray-400">Support</div>
+                <div className="text-2xl font-bold text-blue-400 mb-2 font-['Fira_Code']">24/7</div>
+                <div className="text-gray-400 font-['Fira_Sans'] text-sm">Support</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-purple-400 mb-2">0%</div>
-                <div className="text-gray-400">Platform Fees</div>
+                <div className="text-2xl font-bold text-purple-400 mb-2 font-['Fira_Code']">0%</div>
+                <div className="text-gray-400 font-['Fira_Sans'] text-sm">Platform Fees</div>
               </div>
             </div>
           </div>

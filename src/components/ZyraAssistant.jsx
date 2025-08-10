@@ -80,10 +80,15 @@ const ZyraAssistant = () => {
         });
       }
 
+      // Debug: Log the response structure
+      console.log('API Response:', response);
+      console.log('Response data:', response.data);
+      console.log('Response content:', response.data?.response || response.response);
+
       const assistantMessage = {
         id: Date.now() + 1,
         type: 'assistant',
-        content: response.response || response.answer || 'I apologize, but I encountered an issue processing your request.',
+        content: response.data?.response || response.response || response.data?.answer || response.answer || 'I apologize, but I encountered an issue processing your request.',
         timestamp: new Date(),
         searchMode: isDeepSearchMode
       };

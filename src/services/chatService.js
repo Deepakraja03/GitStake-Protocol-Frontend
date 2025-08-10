@@ -31,6 +31,7 @@ export const chatService = {
       
       try {
         const response = await api.post('/chat/ask', payload);
+        // Return the full response data structure
         return response.data;
       } catch (error) {
         throw new Error(`Failed to get AI response: ${error.response?.data?.message || error.message}`);

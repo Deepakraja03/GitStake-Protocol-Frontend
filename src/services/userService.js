@@ -35,15 +35,15 @@ export const userService = {
   /**
    * Get multi-metric leaderboard with developer levels
    * @param {Object} params - Query parameters
-   * @param {string} params.metric - Metric to sort by
-   * @param {number} params.limit - Number of users to return
+   * @param {string} params.metric - Metric to sort by (default: proficiencyScore)
+   * @param {number} params.limit - Number of users to return (default: 10)
    * @param {string} params.level - Filter by developer level
    */
   getLeaderboard: async (params = {}) => {
-    const { metric, limit, level } = params;
+    const { metric = 'proficiencyScore', limit = 10, level } = params;
     const queryParams = new URLSearchParams({
-      ...(metric && { metric }),
-      ...(limit && { limit: limit.toString() }),
+      metric,
+      limit: limit.toString(),
       ...(level && { level })
     });
     

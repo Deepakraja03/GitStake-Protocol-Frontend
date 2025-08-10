@@ -5,6 +5,39 @@ import api from './api';
  * Complete Octokit coverage for GitHub API operations
  */
 export const githubService = {
+  // User Analytics (Main Dashboard Data)
+  getUserAnalytics: async (username) => {
+    if (!username) throw new Error('Username is required');
+
+    try {
+      const response = await api.get(`/users/${username}/analytics`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching user analytics:', error);
+      throw new Error(`Failed to fetch analytics: ${error.response?.data?.message || error.message}`);
+    }
+  },
+
+  // Get user repositories
+  getUserRepositories: async (username, params = {}) => {
+    if (!username) throw new Error('Username is required');
+
+    try {
+      const queryParams = new URLSearchParams({
+        type: 'owner',
+        sort: 'updated',
+        per_page: 30,
+        page: 1,
+        ...params
+      }).toString();
+      const response = await api.get(`/github/repos/${username}?${queryParams}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching user repositories:', error);
+      throw new Error(`Failed to fetch repositories: ${error.response?.data?.message || error.message}`);
+    }
+  },
+
   // Profile & Social Operations
   profile: {
     /**
@@ -13,7 +46,7 @@ export const githubService = {
      */
     getProfile: async (username) => {
       if (!username) throw new Error('Username is required');
-      
+
       try {
         const response = await api.get(`/github/profile/${username}`);
         return response.data;
@@ -29,10 +62,10 @@ export const githubService = {
      */
     getEvents: async (username, params = {}) => {
       if (!username) throw new Error('Username is required');
-      
+
       const { page = 1, per_page = 30 } = params;
       const queryParams = new URLSearchParams({ page: page.toString(), per_page: per_page.toString() });
-      
+
       try {
         const response = await api.get(`/github/profile/${username}/events?${queryParams}`);
         return response.data;
@@ -48,10 +81,10 @@ export const githubService = {
      */
     getFollowers: async (username, params = {}) => {
       if (!username) throw new Error('Username is required');
-      
+
       const { page = 1, per_page = 30 } = params;
       const queryParams = new URLSearchParams({ page: page.toString(), per_page: per_page.toString() });
-      
+
       try {
         const response = await api.get(`/github/profile/${username}/followers?${queryParams}`);
         return response.data;
@@ -67,10 +100,10 @@ export const githubService = {
      */
     getFollowing: async (username, params = {}) => {
       if (!username) throw new Error('Username is required');
-      
+
       const { page = 1, per_page = 30 } = params;
       const queryParams = new URLSearchParams({ page: page.toString(), per_page: per_page.toString() });
-      
+
       try {
         const response = await api.get(`/github/profile/${username}/following?${queryParams}`);
         return response.data;

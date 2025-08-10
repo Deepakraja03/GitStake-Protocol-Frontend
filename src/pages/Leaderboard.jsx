@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, TrendingUp, Users, GitCommit, DollarSign, Target, Search, Filter, Crown, Star, Zap } from 'lucide-react';
 import CountUp from 'react-countup';
+import { userService } from '../services/userService';
 
 // Loading Screen Component
 const LoadingScreen = () => (
@@ -363,32 +364,76 @@ const LoadingScreen = () => (
     };
 
     const Leaderboard = () => {
-      const [timeFilter, setTimeFilter] = useState('all');
+      const [timeFilter, setTimeFilter] = useState('proficiencyScore');
       const [searchTerm, setSearchTerm] = useState('');
       const [isLoading, setIsLoading] = useState(true);
+      const [leaderboardData, setLeaderboardData] = useState([]);
+      const [error, setError] = useState(null);
 
+      // Load leaderboard data from API
       useEffect(() => {
-        const timer = setTimeout(() => setIsLoading(false), 1500);
-        return () => clearTimeout(timer);
-      }, []);
+        const loadLeaderboard = async () => {
+          setIsLoading(true);
+          setError(null);
+          
+          try {
+            const response = await userService.getLeaderboard({
+              metric: timeFilter,
+              limit: 50
+            });
+            
+            if (response.success) {
+              // Transform API data to match component structure
+              const transformedData = response.data.map((user, index) => ({
+                username: user.username || user.name || `User${index + 1}`,
+                points: user.analytics?.proficiencyScore || user.proficiencyScore || 0,
+                commits: user.analytics?.totalCommits || user.totalCommits || 0,
+                change: Math.floor(Math.random() * 20) - 10, // Random change for demo
+                avatarUrl: user.avatarUrl,
+                skillLevel: user.insights?.skillLevel || 'Beginner',
+                repoCount: user.analytics?.repoCount || 0,
+                totalPRs: user.analytics?.totalPRs || 0,
+                streak: user.analytics?.streak?.current || 0
+              }));
+              
+              setLeaderboardData(transformedData);
+            } else {
+              throw new Error('Failed to fetch leaderboard data');
+            }
+          } catch (error) {
+            console.error('Error loading leaderboard:', error);
+            setError(error.message);
+            
+            // Fallback to sample data
+            setLeaderboardData([
+              { username: 'CodeMaster_Alex', points: 15420, commits: 342, change: 12 },
+              { username: 'DevNinja_Sarah', points: 14890, commits: 298, change: 8 },
+              { username: 'GitGuru_Mike', points: 13750, commits: 276, change: -3 },
+              { username: 'ByteWizard_Emma', points: 12980, commits: 245, change: 15 },
+              { username: 'CodeCrusher_Tom', points: 11560, commits: 223, change: 5 },
+              { username: 'ScriptSage_Lisa', points: 10890, commits: 201, change: -1 },
+              { username: 'DataDriven_John', points: 9750, commits: 189, change: 7 },
+              { username: 'AlgoAce_Maria', points: 8920, commits: 167, change: 3 },
+            ]);
+          } finally {
+            setIsLoading(false);
+          }
+        };
 
-      // Sample data
-      const leaderboardData = [
-        { username: 'CodeMaster_Alex', points: 15420, commits: 342, change: 12 },
-        { username: 'DevNinja_Sarah', points: 14890, commits: 298, change: 8 },
-        { username: 'GitGuru_Mike', points: 13750, commits: 276, change: -3 },
-        { username: 'ByteWizard_Emma', points: 12980, commits: 245, change: 15 },
-        { username: 'CodeCrusher_Tom', points: 11560, commits: 223, change: 5 },
-        { username: 'ScriptSage_Lisa', points: 10890, commits: 201, change: -1 },
-        { username: 'DataDriven_John', points: 9750, commits: 189, change: 7 },
-        { username: 'AlgoAce_Maria', points: 8920, commits: 167, change: 3 },
-      ];
+        loadLeaderboard();
+      }, [timeFilter]);
+
+      // Calculate stats from real data
+      const totalCommits = leaderboardData.reduce((sum, user) => sum + user.commits, 0);
+      const totalDevelopers = leaderboardData.length;
+      const avgScore = leaderboardData.length > 0 ? Math.round(leaderboardData.reduce((sum, user) => sum + user.points, 0) / leaderboardData.length) : 0;
+      const totalRepos = leaderboardData.reduce((sum, user) => sum + (user.repoCount || 0), 0);
 
       const statsData = [
-        { icon: Users, title: 'Total Developers', value: 1247, subtitle: 'Active contributors', delay: 0.2 },
-        { icon: GitCommit, title: 'Total Commits', value: 89432, subtitle: 'This month', delay: 0.3 },
-        { icon: DollarSign, title: 'Rewards Distributed', value: 45678, subtitle: 'In tokens', delay: 0.4 },
-        { icon: Target, title: 'Active Challenges', value: 23, subtitle: 'Join now', delay: 0.5 },
+        { icon: Users, title: 'Total Developers', value: totalDevelopers, subtitle: 'Active contributors', delay: 0.2 },
+        { icon: GitCommit, title: 'Total Commits', value: totalCommits, subtitle: 'All time', delay: 0.3 },
+        { icon: Target, title: 'Average Score', value: avgScore, subtitle: 'Proficiency score', delay: 0.4 },
+        { icon: DollarSign, title: 'Total Repositories', value: totalRepos, subtitle: 'Public repos', delay: 0.5 },
       ];
 
       if (isLoading) {
@@ -454,10 +499,12 @@ const LoadingScreen = () => (
                     onChange={(e) => setTimeFilter(e.target.value)}
                     className="bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#E84142] font-['JetBrains_Mono']"
                   >
-                    <option value="all">All Time</option>
-                    <option value="month">This Month</option>
-                    <option value="week">This Week</option>
-                    <option value="day">Today</option>
+                    <option value="proficiencyScore">Proficiency Score</option>
+                    <option value="totalCommits">Total Commits</option>
+                    <option value="repoCount">Repository Count</option>
+                    <option value="totalPRs">Pull Requests</option>
+                    <option value="innovationScore">Innovation Score</option>
+                    <option value="collaborationScore">Collaboration Score</option>
                   </select>
                 </div>
               </div>

@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { FaGithub, FaCode, FaCoins, FaTrophy, FaRocket, FaChevronDown } from 'react-icons/fa';
-import TypingText from '../../components/animations/TypingText';
+import { Github, Code, Trophy, Rocket, ChevronDown, Coins } from 'lucide-react';
 
-const FloatingCard = ({ children, delay = 0, className = '' }) => (
+const FeatureCard = ({ children, delay = 0, className = '' }) => (
   <motion.div
-    className={`backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-6 ${className}`}
-    initial={{ opacity: 0, y: 50 }}
+    className={`backdrop-blur-xl bg-white/[0.02] border border-white/[0.05] rounded-xl p-6 hover:bg-white/[0.04] transition-all duration-300 ${className}`}
+    initial={{ opacity: 0, y: 30 }}
     animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.8, delay }}
-    whileHover={{ y: -5, scale: 1.02 }}
+    transition={{ duration: 0.6, delay }}
   >
     {children}
   </motion.div>
@@ -18,200 +16,73 @@ const FloatingCard = ({ children, delay = 0, className = '' }) => (
 
 
 
-const AnimatedBackground = () => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      setMousePosition({
-        x: (e.clientX / window.innerWidth) * 100,
-        y: (e.clientY / window.innerHeight) * 100,
-      });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
-  return (
-    <div className="absolute inset-0 overflow-hidden">
-      {/* Animated gradient orbs */}
-      <motion.div
-        className="absolute w-96 h-96 rounded-full opacity-20"
-        style={{
-          background: 'radial-gradient(circle, #E84142 0%, transparent 70%)',
-          left: `${mousePosition.x * 0.1}%`,
-          top: `${mousePosition.y * 0.1}%`,
-        }}
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.2, 0.3, 0.2],
-        }}
-        transition={{ duration: 4, repeat: Infinity }}
-      />
-      <motion.div
-        className="absolute w-80 h-80 rounded-full opacity-15"
-        style={{
-          background: 'radial-gradient(circle, #9B2CFF 0%, transparent 70%)',
-          right: `${mousePosition.x * 0.05}%`,
-          bottom: `${mousePosition.y * 0.05}%`,
-        }}
-        animate={{
-          scale: [1.2, 1, 1.2],
-          opacity: [0.15, 0.25, 0.15],
-        }}
-        transition={{ duration: 5, repeat: Infinity }}
-      />
-
-      {/* Floating AVAX Coins */}
-      {[...Array(12)].map((_, i) => (
-        <motion.div
-          key={`coin-${i}`}
-          className="absolute pointer-events-none"
-          style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 50 + 100}%`
-          }}
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{
-            opacity: [0, 0.3, 0],
-            scale: [0, 1, 0],
-            y: [0, -80, -160],
-            rotateY: [0, 180]
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            delay: i * 2,
-            ease: "easeInOut"
-          }}
-        >
-          <div
-            className="rounded-full relative border border-yellow-300/50"
-            style={{
-              width: Math.random() * 20 + 15,
-              height: Math.random() * 20 + 15,
-              background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%)',
-              boxShadow: '0 2px 8px rgba(255, 215, 0, 0.2)'
-            }}
-          >
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span
-                className="font-bold text-red-800 font-['Plus_Jakarta_Sans']"
-                style={{ fontSize: '6px' }}
-              >
-                A
-              </span>
-            </div>
-          </div>
-        </motion.div>
-      ))}
-
-      {/* Floating particles */}
-      {[...Array(15)].map((_, i) => (
-        <motion.div
-          key={`particle-${i}`}
-          className="absolute w-1 h-1 bg-yellow-400 rounded-full opacity-30"
-          style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-          }}
-          animate={{
-            y: [-10, -60],
-            opacity: [0, 0.4, 0],
-            scale: [0, 1, 0]
-          }}
-          transition={{
-            duration: Math.random() * 6 + 8,
-            repeat: Infinity,
-            delay: Math.random() * 5,
-            ease: "easeInOut"
-          }}
-        />
-      ))}
-    </div>
-  );
-};
+// Clean background with subtle gradient
+const CleanBackground = () => (
+  <div className="absolute inset-0">
+    <div className="absolute inset-0 bg-gradient-to-br from-[#0B0F1A] via-[#0F1419] to-[#0B0F1A]" />
+    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(232,65,66,0.1),transparent_50%)]" />
+    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(155,44,255,0.1),transparent_50%)]" />
+  </div>
+);
 
 const Hero = () => {
   return (
-    <section className="relative font-['JetBrains_Mono'] min-h-screen flex items-center justify-center px-4 py-20">
-      <AnimatedBackground />
+    <section className="relative min-h-screen flex items-center justify-center px-6 py-20">
+      <CleanBackground />
 
-      <div className="relative z-10 max-w-8xl mx-auto w-full">
-        <div className="text-center mb-16 max-w-6xl mx-auto">
+      <div className="relative z-10 max-w-7xl mx-auto w-full">
+        <div className="text-center mb-16">
+          {/* Badge */}
           <motion.div
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 border border-white/20 text-base mb-12"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.05] border border-white/[0.1] text-sm mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <FaRocket className="text-[#E84142] text-lg" />
-            <span className="font-['JetBrains_Mono'] font-semibold">Revolutionizing Developer Rewards</span>
+            <Rocket size={16} className="text-[#E84142]" />
+            <span className="font-['Fira_Code'] font-medium text-gray-300">Revolutionizing Developer Rewards</span>
           </motion.div>
 
-          <div className="text-6xl flex md:text-8xl lg:text-9xl font-bold tracking-tight mb-8 font-['JetBrains_Mono']">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="bg-gradient-to-r from-white via-white to-gray-300 bg-clip-text text-transparent"
-            >
-              <TypingText text="Code." speed={150} />
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.5 }}
-              className="bg-gradient-to-r from-[#E84142] to-[#9B2CFF] bg-clip-text text-transparent"
-            >
-              <TypingText text="Stake." speed={150} delay={1500} />
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 3.0 }}
-              className="bg-gradient-to-r from-[#00D09C] to-[#E84142] bg-clip-text text-transparent"
-            >
-              <TypingText text="Earn." speed={150} delay={3000} />
-            </motion.div>
-          </div>
-
-          <motion.div
-            className="text-xl md:text-xl  text-gray-300 max-w-4xl mx-auto mb-16 leading-relaxed font-['Plus_Jakarta_Sans']"
+          {/* Main Heading */}
+          <motion.h1
+            className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 font-['Fira_Code']"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 4.5 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <TypingText
-              text="The first decentralized platform that rewards developers for their GitHub contributions through AVAX staking and gamified challenges."
-              speed={50}
-              delay={4500}
-            />
-          </motion.div>
+            <span className="text-white">Code. Stake. Earn.</span>
+          </motion.h1>
 
-          <motion.div
-            className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16"
+          {/* Subtitle */}
+          <motion.p
+            className="text-xl md:text-2xl text-gray-400 max-w-4xl mx-auto mb-12 leading-relaxed font-['Fira_Sans']"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 6.0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            The first decentralized platform that rewards developers for their GitHub contributions through AVAX staking and gamified challenges.
+          </motion.p>
+
+          {/* CTA Buttons */}
+          <motion.div
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
           >
             <Link
               to="/auth"
-              className="group relative px-10 py-5 bg-gradient-to-r from-[#E84142] to-[#9B2CFF] rounded-2xl font-bold text-white text-xl overflow-hidden font-['Plus_Jakarta_Sans'] shadow-2xl"
+              className="group px-8 py-4 bg-gradient-to-r from-[#E84142] to-[#9B2CFF] rounded-xl font-semibold text-white text-lg hover:shadow-lg hover:shadow-[#E84142]/25 transition-all duration-300 font-['Fira_Sans']"
             >
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-[#9B2CFF] to-[#E84142] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              />
-              <span className="relative z-10 flex items-center gap-3">
-                <FaRocket className="text-xl" />
+              <span className="flex items-center gap-2">
+                <Rocket size={20} />
                 Get Started
               </span>
             </Link>
 
             <Link
               to="/leaderboard"
-              className="px-10 py-5 border-2 border-white/20 rounded-2xl font-bold text-white text-xl hover:bg-white/5 transition-all duration-300 font-['Plus_Jakarta_Sans'] backdrop-blur-md"
+              className="px-8 py-4 border border-white/[0.2] rounded-xl font-semibold text-white text-lg hover:bg-white/[0.05] transition-all duration-300 font-['Fira_Sans'] backdrop-blur-xl"
             >
               View Leaderboard
             </Link>
@@ -219,36 +90,36 @@ const Hero = () => {
         </div>
 
         {/* Feature Cards */}
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
-          <FloatingCard delay={0.8}>
+        <div className="grid md:grid-cols-3 gap-6 mb-16">
+          <FeatureCard delay={0.8}>
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-[#E84142] to-[#9B2CFF] rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <FaGithub className="text-2xl text-white" />
+              <div className="w-12 h-12 bg-gradient-to-r from-[#E84142]/10 to-[#9B2CFF]/10 border border-[#E84142]/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Github size={24} className="text-[#E84142]" />
               </div>
-              <h3 className="text-xl font-bold mb-3 font-['Plus_Jakarta_Sans']">GitHub Integration</h3>
-              <p className="text-gray-400 font-['Plus_Jakarta_Sans']">Connect your GitHub account and earn rewards for every commit, PR, and contribution.</p>
+              <h3 className="text-lg font-semibold mb-3 font-['Fira_Sans'] text-white">GitHub Integration</h3>
+              <p className="text-gray-400 font-['Fira_Sans'] text-sm leading-relaxed">Connect your GitHub account and earn rewards for every commit, PR, and contribution.</p>
             </div>
-          </FloatingCard>
+          </FeatureCard>
 
-          <FloatingCard delay={1.0}>
+          <FeatureCard delay={1.0}>
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-[#00D09C] to-[#E84142] rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <FaCoins className="text-2xl text-white" />
+              <div className="w-12 h-12 bg-gradient-to-r from-[#00D09C]/10 to-[#E84142]/10 border border-[#00D09C]/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Coins size={24} className="text-[#00D09C]" />
               </div>
-              <h3 className="text-xl font-bold mb-3 font-['Plus_Jakarta_Sans']">AVAX Staking</h3>
-              <p className="text-gray-400 font-['Plus_Jakarta_Sans']">Stake AVAX tokens to boost your rewards and participate in governance decisions.</p>
+              <h3 className="text-lg font-semibold mb-3 font-['Fira_Sans'] text-white">AVAX Staking</h3>
+              <p className="text-gray-400 font-['Fira_Sans'] text-sm leading-relaxed">Stake AVAX tokens to boost your rewards and participate in governance decisions.</p>
             </div>
-          </FloatingCard>
+          </FeatureCard>
 
-          <FloatingCard delay={1.2}>
+          <FeatureCard delay={1.2}>
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-[#9B2CFF] to-[#00D09C] rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <FaTrophy className="text-2xl text-white" />
+              <div className="w-12 h-12 bg-gradient-to-r from-[#9B2CFF]/10 to-[#00D09C]/10 border border-[#9B2CFF]/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Trophy size={24} className="text-[#9B2CFF]" />
               </div>
-              <h3 className="text-xl font-bold mb-3 font-['Plus_Jakarta_Sans']">Compete & Win</h3>
-              <p className="text-gray-400 font-['Plus_Jakarta_Sans']">Join coding challenges, climb leaderboards, and win exclusive NFT rewards.</p>
+              <h3 className="text-lg font-semibold mb-3 font-['Fira_Sans'] text-white">Compete & Win</h3>
+              <p className="text-gray-400 font-['Fira_Sans'] text-sm leading-relaxed">Join coding challenges, climb leaderboards, and win exclusive NFT rewards.</p>
             </div>
-          </FloatingCard>
+          </FeatureCard>
         </div>
 
         {/* Scroll indicator */}
@@ -256,15 +127,15 @@ const Hero = () => {
           className="flex justify-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
+          transition={{ delay: 1.2 }}
         >
           <motion.div
-            className="flex flex-col items-center text-gray-400 cursor-pointer"
-            animate={{ y: [0, 10, 0] }}
+            className="flex flex-col items-center text-gray-500 cursor-pointer"
+            animate={{ y: [0, 8, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <span className="text-sm mb-2 font-['Plus_Jakarta_Sans']">Scroll to explore</span>
-            <FaChevronDown />
+            <span className="text-xs mb-2 font-['Fira_Sans']">Scroll to explore</span>
+            <ChevronDown size={16} />
           </motion.div>
         </motion.div>
       </div>
