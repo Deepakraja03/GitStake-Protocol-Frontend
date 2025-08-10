@@ -3,309 +3,392 @@ import { motion } from 'framer-motion';
 import { Trophy, TrendingUp, Users, GitCommit, DollarSign, Target, Search, Filter, Crown, Star, Zap } from 'lucide-react';
 import CountUp from 'react-countup';
 import { userService } from '../services/userService';
-import AuthDebug from '../components/AuthDebug';
 
 // Loading Screen Component
 const LoadingScreen = () => (
-      <div className="min-h-screen bg-gradient-to-br from-[#0B0F1A] via-[#0F1419] to-[#0B0F1A] flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#E84142] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white font-['JetBrains_Mono'] text-lg">Loading Leaderboard...</p>
+  <div className="min-h-screen relative">
+    <LandingBackground />
+    <div className="relative z-10 min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-16 h-16 border-4 border-[#E84142] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-white font-semibold text-lg font-['Fira_Sans']">
+          Loading Leaderboard...
+        </p>
+      </div>
+    </div>
+  </div>
+);
+
+// Modern Card Component with Landing Page Theme
+const ModernCard = ({ children, className = "", delay = 0 }) => (
+  <motion.div
+    className={`backdrop-blur-xl bg-white/[0.02] border border-white/[0.05] rounded-xl p-6 hover:bg-white/[0.04] transition-all duration-300 ${className}`}
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.6, delay }}
+    whileHover={{ y: -2 }}
+  >
+    {children}
+  </motion.div>
+);
+
+// Stats Card Component with Landing Page Theme
+const StatsCard = ({
+  icon: Icon,
+  title,
+  value,
+  subtitle,
+  delay,
+  color = "blue",
+}) => {
+  const colorClasses = {
+    blue: "bg-gradient-to-r from-blue-500/10 to-blue-600/10 border border-blue-500/20",
+    green:
+      "bg-gradient-to-r from-green-500/10 to-green-600/10 border border-green-500/20",
+    purple:
+      "bg-gradient-to-r from-[#9B2CFF]/10 to-purple-600/10 border border-[#9B2CFF]/20",
+    orange:
+      "bg-gradient-to-r from-[#E84142]/10 to-orange-600/10 border border-[#E84142]/20",
+  };
+
+  const iconColors = {
+    blue: "text-blue-400",
+    green: "text-green-400",
+    purple: "text-[#9B2CFF]",
+    orange: "text-[#E84142]",
+  };
+
+  return (
+    <ModernCard
+      delay={delay}
+      className="text-center hover:scale-105 transition-transform duration-300"
+    >
+      <div
+        className={`w-16 h-16 rounded-xl ${colorClasses[color]} flex items-center justify-center mx-auto mb-4`}
+      >
+        <Icon size={28} className={`${iconColors[color]}`} />
+      </div>
+      <h3 className="text-3xl font-bold text-white mb-2 font-['Fira_Code']">
+        <CountUp end={value} duration={2} separator="," />
+      </h3>
+      <p className="text-lg font-semibold text-gray-300 mb-1 font-['Fira_Sans']">
+        {title}
+      </p>
+      <div className="text-sm text-gray-400 font-['Fira_Sans']">{subtitle}</div>
+    </ModernCard>
+  );
+};
+
+// Enhanced User Avatar Component with Landing Page Theme
+const UserAvatar = ({ user, size = "lg", rank }) => {
+  const sizeClasses = {
+    sm: "w-12 h-12",
+    md: "w-16 h-16",
+    lg: "w-24 h-24",
+    xl: "w-32 h-32",
+  };
+
+  const getRankColors = () => {
+    if (rank === 1) return "from-yellow-400 to-yellow-600";
+    if (rank === 2) return "from-slate-300 to-slate-500";
+    if (rank === 3) return "from-amber-500 to-amber-700";
+    return "from-[#E84142] to-[#9B2CFF]";
+  };
+
+  return (
+    <div className={`${sizeClasses[size]} relative`}>
+      <div
+        className={`w-full h-full rounded-full bg-gradient-to-r ${getRankColors()} p-0.5 shadow-xl`}
+      >
+        <div className="w-full h-full rounded-full bg-[#0F1419] flex items-center justify-center overflow-hidden">
+          {user.avatarUrl ? (
+            <img
+              src={user.avatarUrl}
+              alt={user.username}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.style.display = "none";
+                e.target.nextSibling.style.display = "flex";
+              }}
+            />
+          ) : null}
+          <div
+            className={`w-full h-full bg-gradient-to-r ${getRankColors()} flex items-center justify-center ${
+              user.avatarUrl ? "hidden" : "flex"
+            }`}
+            style={{ display: user.avatarUrl ? "none" : "flex" }}
+          >
+            <span className="text-white font-bold text-xl font-['Fira_Code']">
+              {(user.name || user.username || "U").charAt(0).toUpperCase()}
+            </span>
+          </div>
         </div>
       </div>
-    );
 
-    // Modern Card Component
-    const ModernCard = ({ children, className = "", delay = 0 }) => (
-      <motion.div
-        className={`backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6 shadow-2xl ${className}`}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay }}
-        whileHover={{ scale: 1.02, y: -5 }}
-      >
-        {children}
-      </motion.div>
-    );
+      {/* Rank Badge */}
+      {rank <= 3 && (
+        <motion.div
+          className={`absolute -bottom-1 -right-1 w-8 h-8 rounded-full flex items-center justify-center border-2 border-[#0F1419] shadow-lg
+            ${
+              rank === 1
+                ? "bg-gradient-to-r from-yellow-400 to-yellow-600"
+                : rank === 2
+                ? "bg-gradient-to-r from-slate-300 to-slate-500"
+                : "bg-gradient-to-r from-amber-500 to-amber-700"
+            }`}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.5, type: "spring" }}
+        >
+          {rank === 1 ? (
+            <Crown size={16} className="text-white" />
+          ) : (
+            <span className="text-white font-bold text-sm font-['Fira_Code']">
+              {rank}
+            </span>
+          )}
+        </motion.div>
+      )}
+    </div>
+  );
+};
 
-    // Stats Card Component
-    const StatsCard = ({ icon: Icon, title, value, subtitle, delay }) => (
-      <ModernCard delay={delay} className="text-center">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-[#E84142] to-[#9B2CFF] flex items-center justify-center mx-auto mb-4">
-          <Icon size={32} className="text-white" />
-        </div>
-        <h3 className="text-2xl font-bold text-white mb-2 font-['JetBrains_Mono']">
-          <CountUp end={value} duration={2} separator="," />
-        </h3>
-        <p className="text-lg font-semibold text-gray-300 mb-1 font-['JetBrains_Mono']">{title}</p>
-        <div className="text-sm text-gray-500 font-['JetBrains_Mono']">{subtitle}</div>
-      </ModernCard>
+// Updated Podium Component with Landing Page Theme
+const PodiumDisplay = ({ leaderboardData }) => {
+  if (!leaderboardData || leaderboardData.length < 3) {
+    return (
+      <div className="text-center py-16">
+        <Trophy size={48} className="text-gray-600 mx-auto mb-4" />
+        <p className="text-gray-400 font-semibold font-['Fira_Sans']">
+          Not enough data for podium display
+        </p>
+      </div>
     );
+  }
 
-    // Updated Podium Component
-  const PodiumDisplay = ({ leaderboardData  }) => {
   return (
     <motion.div
-      className="relative mb-16 bg-gradient-to-br from-[#2D3748] to-[#1A202C] rounded-3xl p-8 overflow-hidden"
+      className="relative mb-16 backdrop-blur-xl bg-white/[0.02] border border-white/[0.05] rounded-2xl p-8 hover:bg-white/[0.04] transition-all duration-300 overflow-hidden"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 1, delay: 0.8 }}
     >
       {/* Background Glow Effect */}
-      <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/10 via-transparent to-blue-400/10 pointer-events-none"></div>
-      
+      <div className="absolute inset-0 bg-gradient-to-r from-[#E84142]/10 via-[#9B2CFF]/5 to-[#E84142]/10 pointer-events-none"></div>
+
       <div className="flex items-end justify-center gap-8 max-w-5xl mx-auto relative">
-        {/* 2nd Place - Jackson */}
+        {/* 2nd Place */}
         <motion.div
           className="flex flex-col items-center relative"
           initial={{ opacity: 0, y: 100 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.0 }}
         >
-          {/* User Profile Section */}
-          <div className="flex flex-col items-center mb-4 z-10">
-            {/* Profile Circle */}
-            <div className="relative mb-4">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 p-1 relative">
-                <div className="w-full h-full rounded-full bg-[#2D3748] flex items-center justify-center relative overflow-hidden">
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 flex items-center justify-center">
-                    <span className="text-white font-bold text-xl font-mono">
-                      {leaderboardData[1]?.username.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Position Badge */}
-              {/* <motion.div
-                className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center border-2 border-[#2D3748]"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 1.3, type: "spring" }}
-              >
-                <span className="text-white font-bold text-sm font-mono">2</span>
-              </motion.div> */}
-            </div>
-            
-            {/* Username */}
-            <motion.h3 
-              className="text-white font-semibold text-lg font-mono mb-1"
+          <div className="flex flex-col items-center mb-6 z-10">
+            <UserAvatar user={leaderboardData[1]} size="lg" rank={2} />
+
+            <motion.h3
+              className="text-white font-bold text-xl mt-4 mb-1 font-['Fira_Sans']"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.1 }}
             >
-              {leaderboardData[1]?.username || 'Jackson'}
+              {leaderboardData[1]?.name || leaderboardData[1]?.username}
             </motion.h3>
-            
-            {/* Points */}
-            <motion.div 
-              className="text-2xl font-bold text-blue-400 font-mono mb-2"
+
+            {leaderboardData[1]?.developerLevel && (
+              <motion.div
+                className="text-sm text-gray-300 mb-2 flex items-center justify-center bg-white/[0.05] px-3 py-1 rounded-full border border-white/[0.1] font-['Fira_Sans']"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.15 }}
+              >
+                <span className="mr-1">
+                  {leaderboardData[1].developerLevel.emoji}
+                </span>
+                {leaderboardData[1].developerLevel.name}
+              </motion.div>
+            )}
+
+            <motion.div
+              className="text-2xl font-bold text-gray-300 mb-2 font-['Fira_Code']"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 1.2, type: "spring" }}
             >
-              <CountUp end={leaderboardData[1]?.points || 1847} duration={2.5} separator="," />
+              <CountUp
+                end={leaderboardData[1]?.points || 0}
+                duration={2.5}
+                separator=","
+              />
             </motion.div>
-            
-            <div className="text-sm text-gray-400 font-mono">@username</div>
+
+            <div className="text-sm text-gray-400 font-['Fira_Sans']">
+              @{leaderboardData[1]?.username}
+            </div>
           </div>
 
-          {/* Podium Base - 2nd Place (Medium Height) */}
           <motion.div
-            className="w-32 h-32 bg-gradient-to-r from-blue-500 to-blue-700 rounded-t-lg relative shadow-2xl"
+            className="w-32 h-32 bg-gradient-to-t from-slate-600 to-slate-500 rounded-t-xl relative shadow-2xl border-t-4 border-slate-400"
             initial={{ height: 0 }}
             animate={{ height: 128 }}
             transition={{ duration: 1, delay: 1.5, ease: "easeOut" }}
           >
-            {/* Podium Number */}
             <div className="absolute top-4 left-1/2 transform -translate-x-1/2">
-              <span className="text-4xl font-bold text-white/80 font-mono">2</span>
+              <Medal size={24} className="text-white" />
             </div>
-            
-            {/* Podium Shine Effect */}
-            {/* <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 animate-pulse"></div> */}
-            
-            {/* Bottom Border */}
-            {/* <div className="absolute bottom-0 left-0 right-0 h-2 bg-blue-700 rounded-b-lg"></div> */}
+            <div className="absolute top-12 left-1/2 transform -translate-x-1/2 text-2xl font-bold text-white font-['Fira_Code']">
+              2
+            </div>
+            {/* Glow Effect */}
+            <div className="absolute inset-0 rounded-t-xl bg-gradient-to-t from-transparent to-slate-400/20"></div>
           </motion.div>
         </motion.div>
 
-        {/* 1st Place - Eiden (Winner - Tallest) */}
+        {/* 1st Place - Winner */}
         <motion.div
           className="flex flex-col items-center relative"
           initial={{ opacity: 0, y: 100 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.2 }}
         >
-          {/* User Profile Section */}
-          <div className="flex flex-col items-center mb-4 z-10">
-            {/* Crown */}
+          <div className="flex flex-col items-center mb-6 z-10">
             <motion.div
-              className="mb-2"
-              animate={{ y: [-2, 2, -2] }}
-              transition={{ duration: 3, repeat: Infinity }}
+              className="mb-3"
+              animate={{ y: [-3, 3, -3] }}
+              transition={{ duration: 4, repeat: Infinity }}
             >
               <Crown className="text-yellow-400" size={32} />
             </motion.div>
-            
-            {/* Profile Circle */}
-            <div className="relative mb-4">
-              <motion.div
-                className="w-32 h-32 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 p-1 relative"
-                animate={{ 
-                  boxShadow: [
-                    "0 0 20px rgba(251, 191, 36, 0.3)",
-                    "0 0 30px rgba(251, 191, 36, 0.6)",
-                    "0 0 20px rgba(251, 191, 36, 0.3)"
-                  ]
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                <div className="w-full h-full rounded-full bg-[#2D3748] flex items-center justify-center relative overflow-hidden">
-                  <div className="w-28 h-28 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 flex items-center justify-center">
-                    <span className="text-white font-bold text-2xl font-mono">
-                      {leaderboardData[0]?.username.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-              
-              {/* Position Badge */}
-              {/* <motion.div
-                className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center border-2 border-[#2D3748]"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 1.5, type: "spring" }}
-              >
-                <span className="text-white font-bold text-lg font-mono">1</span>
-              </motion.div> */}
-            </div>
-            
-            {/* Username */}
-            <motion.h3 
-              className="text-white font-semibold text-xl font-mono mb-1"
+
+            <UserAvatar user={leaderboardData[0]} size="xl" rank={1} />
+
+            <motion.h3
+              className="text-white font-bold text-2xl mt-4 mb-1 font-['Fira_Sans']"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.3 }}
             >
-              {leaderboardData[0]?.username || 'Eiden'}
+              {leaderboardData[0]?.name || leaderboardData[0]?.username}
             </motion.h3>
-            
-            {/* Points */}
-            <motion.div 
-              className="text-3xl font-bold text-yellow-400 font-mono mb-2"
+
+            {leaderboardData[0]?.developerLevel && (
+              <motion.div
+                className="text-sm text-yellow-200 mb-2 flex items-center justify-center bg-yellow-900/30 px-3 py-1 rounded-full border border-yellow-700/50 font-medium font-['Fira_Sans']"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.35 }}
+              >
+                <span className="mr-1">
+                  {leaderboardData[0].developerLevel.emoji}
+                </span>
+                {leaderboardData[0].developerLevel.name}
+              </motion.div>
+            )}
+
+            <motion.div
+              className="text-3xl font-bold text-yellow-400 mb-2 font-['Fira_Code']"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 1.4, type: "spring" }}
             >
-              <CountUp end={leaderboardData[0]?.points || 2430} duration={2.5} separator="," />
+              <CountUp
+                end={leaderboardData[0]?.points || 0}
+                duration={2.5}
+                separator=","
+              />
             </motion.div>
-            
-            <div className="text-sm text-gray-400 font-mono">@username</div>
+
+            <div className="text-sm text-gray-400 font-['Fira_Sans']">
+              @{leaderboardData[0]?.username}
+            </div>
           </div>
 
-          {/* Podium Base - 1st Place (Tallest) */}
           <motion.div
-          
-            className="w-36 h-48 bg-gradient-to-r from-yellow-400 to-orange-500  rounded-t-lg relative shadow-2xl"
+            className="w-36 h-48 bg-gradient-to-t from-yellow-600 to-yellow-400 rounded-t-xl relative shadow-2xl border-t-4 border-yellow-300"
             initial={{ height: 0 }}
             animate={{ height: 192 }}
             transition={{ duration: 1.2, delay: 1.7, ease: "easeOut" }}
           >
-            {/* Podium Number */}
-            <div className="absolute top-6 mt-8 left-1/2 transform -translate-x-1/2">
-              <span className="text-5xl font-bold text-white/80 font-mono">1</span>
+            <motion.div
+              // className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-t-xl"
+              // animate={{ x: [-100, 200] }}
+              // transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+            />
+            <div className="absolute top-6 left-1/2 transform -translate-x-1/2">
+              <Trophy size={32} className="text-white drop-shadow-lg" />
             </div>
-            
-            {/* Winner Glow */}
-            {/* <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12"
-              animate={{ x: [-100, 200] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-            ></motion.div> */}
-            
-            {/* Bottom Border */}
-            <div className="absolute bottom-0 left-0 right-0 h-3 bg-yellow-700 rounded-b-lg"></div>
-            
-            {/* Trophy Symbol */}
-            {/* <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-              <div className="text-2xl">🏆</div>
-            </div> */}
+            <div className="absolute top-16 left-1/2 transform -translate-x-1/2 text-4xl font-bold text-white drop-shadow-lg font-['Fira_Code']">
+              1
+            </div>
           </motion.div>
         </motion.div>
 
-        {/* 3rd Place - Emma Aria (Shortest) */}
+        {/* 3rd Place */}
         <motion.div
           className="flex flex-col items-center relative"
           initial={{ opacity: 0, y: 100 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.1 }}
         >
-          {/* User Profile Section */}
-          <div className="flex flex-col items-center mb-4 z-10">
-            {/* Profile Circle */}
-            <div className="relative mb-4">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-r from-green-500 to-green-700 p-1 relative">
-                <div className="w-full h-full rounded-full bg-[#2D3748] flex items-center justify-center relative overflow-hidden">
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-r from-green-500 to-green-700 flex items-center justify-center">
-                    <span className="text-white font-bold text-xl font-mono">
-                      {leaderboardData[2]?.username.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Position Badge */}
-              {/* <motion.div
-                className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center border-2 border-[#2D3748]"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 1.4, type: "spring" }}
-              >
-                <span className="text-white font-bold text-sm font-mono">3</span>
-              </motion.div> */}
-            </div>
-            
-            {/* Username */}
-            <motion.h3 
-              className="text-white font-semibold text-lg font-mono mb-1"
+          <div className="flex flex-col items-center mb-6 z-10">
+            <UserAvatar user={leaderboardData[2]} size="lg" rank={3} />
+
+            <motion.h3
+              className="text-white font-bold text-xl mt-4 mb-1 font-['Fira_Sans']"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.2 }}
             >
-              {leaderboardData[2]?.username || 'Emma Aria'}
+              {leaderboardData[2]?.name || leaderboardData[2]?.username}
             </motion.h3>
-            
-            {/* Points */}
-            <motion.div 
-              className="text-2xl font-bold text-green-400 font-mono mb-2"
+
+            {leaderboardData[2]?.developerLevel && (
+              <motion.div
+                className="text-sm text-gray-300 mb-2 flex items-center justify-center bg-amber-900/30 px-3 py-1 rounded-full border border-amber-700/50 font-['Fira_Sans']"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.25 }}
+              >
+                <span className="mr-1">
+                  {leaderboardData[2].developerLevel.emoji}
+                </span>
+                {leaderboardData[2].developerLevel.name}
+              </motion.div>
+            )}
+
+            <motion.div
+              className="text-2xl font-bold text-amber-400 mb-2 font-['Fira_Code']"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 1.3, type: "spring" }}
             >
-              <CountUp end={leaderboardData[2]?.points || 1674} duration={2.5} separator="," />
+              <CountUp
+                end={leaderboardData[2]?.points || 0}
+                duration={2.5}
+                separator=","
+              />
             </motion.div>
-            
-            <div className="text-sm text-gray-400 font-mono">@username</div>
+
+            <div className="text-sm text-gray-400 font-['Fira_Sans']">
+              @{leaderboardData[2]?.username}
+            </div>
           </div>
 
-          {/* Podium Base - 3rd Place (Shortest) */}
           <motion.div
-            className="w-32 h-24 bg-gradient-to-r from-green-500 to-green-700 rounded-t-lg  relative shadow-2xl"
+            className="w-32 h-24 bg-gradient-to-t from-amber-600 to-amber-500 rounded-t-xl relative shadow-2xl border-t-4 border-amber-400"
             initial={{ height: 0 }}
             animate={{ height: 96 }}
             transition={{ duration: 0.8, delay: 1.3, ease: "easeOut" }}
           >
-            {/* Podium Number */}
             <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
-              <span className="text-3xl font-bold text-white/80 font-mono">3</span>
+              <Award size={20} className="text-white" />
             </div>
-            
-            {/* Podium Shine Effect */}
-            {/* <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 animate-pulse"></div> */}
-            
-            {/* Bottom Border */}
-            <div className="absolute bottom-0 left-0 right-0 h-2 bg-green-700 rounded-b-lg"></div>
+            <div className="absolute top-8 left-1/2 transform -translate-x-1/2 text-2xl font-bold text-white font-['Fira_Code']">
+              3
+            </div>
+            {/* Glow Effect */}
+            <div className="absolute inset-0 rounded-t-xl bg-gradient-to-t from-transparent to-amber-400/20"></div>
           </motion.div>
         </motion.div>
       </div>
@@ -322,269 +405,432 @@ const LoadingScreen = () => (
         return <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-[#E84142] to-[#9B2CFF] flex items-center justify-center text-sm font-bold text-white font-['JetBrains_Mono']">{rank}</div>;
       };
 
-      const getRankColors = () => {
-        if (rank === 1) return 'from-yellow-500/20 to-yellow-600/20 border-yellow-500/30';
-        if (rank === 2) return 'from-gray-400/20 to-gray-500/20 border-gray-400/30';
-        if (rank === 3) return 'from-amber-600/20 to-amber-700/20 border-amber-600/30';
-        return 'from-white/5 to-white/10 border-white/10';
-      };
+  const getRankColors = () => {
+    if (rank === 1)
+      return "border-yellow-500/30 bg-gradient-to-r from-yellow-900/20 to-yellow-800/10";
+    if (rank === 2)
+      return "border-slate-500/30 bg-gradient-to-r from-slate-800/40 to-slate-700/20";
+    if (rank === 3)
+      return "border-amber-500/30 bg-gradient-to-r from-amber-900/20 to-amber-800/10";
+    return "border-white/[0.05] bg-white/[0.02]";
+  };
 
-      return (
-        <motion.div
-          className={`backdrop-blur-xl bg-gradient-to-r ${getRankColors()} border rounded-2xl p-4 shadow-xl hover:scale-[1.02] transition-all duration-300`}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay }}
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-3">
-                {getRankIcon()}
-                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#E84142] to-[#9B2CFF] flex items-center justify-center">
-                  <span className="text-white font-bold text-lg font-['JetBrains_Mono']">
-                    {user.username.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-              </div>
-              <div>
-                <h3 className="text-white font-semibold text-lg font-['JetBrains_Mono']">{user.username}</h3>
-                <p className="text-gray-400 text-sm font-['JetBrains_Mono']">{user.commits} commits</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-2xl font-bold text-white font-['JetBrains_Mono']">
-                <CountUp end={user.points} duration={2} separator="," />
-              </div>
-              <div className={`text-sm font-['JetBrains_Mono'] ${user.change > 0 ? 'text-green-400' : user.change < 0 ? 'text-red-400' : 'text-gray-400'}`}>
-                {user.change > 0 ? '↗' : user.change < 0 ? '↘' : '→'} {Math.abs(user.change)}
-              </div>
-            </div>
+  return (
+    <motion.div
+      className={`border ${getRankColors()} backdrop-blur-xl rounded-xl p-4 hover:bg-white/[0.04] transition-all duration-300 hover:scale-[1.01]`}
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.5, delay }}
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            {getRankIcon()}
+            <UserAvatar user={user} size="sm" />
           </div>
-        </motion.div>
-      );
-    };
-
-    const Leaderboard = () => {
-      const [timeFilter, setTimeFilter] = useState('proficiencyScore');
-      const [searchTerm, setSearchTerm] = useState('');
-      const [isLoading, setIsLoading] = useState(true);
-      const [leaderboardData, setLeaderboardData] = useState([]);
-      const [error, setError] = useState(null);
-
-      // Load leaderboard data from API
-      useEffect(() => {
-        const loadLeaderboard = async () => {
-          setIsLoading(true);
-          setError(null);
-          
-          try {
-            const response = await userService.getLeaderboard({
-              metric: timeFilter,
-              limit: 50
-            });
-            
-            if (response.success) {
-              // Transform API data to match component structure
-              const transformedData = response.data.map((user, index) => ({
-                username: user.username || user.name || `User${index + 1}`,
-                points: user.analytics?.proficiencyScore || user.proficiencyScore || 0,
-                commits: user.analytics?.totalCommits || user.totalCommits || 0,
-                change: Math.floor(Math.random() * 20) - 10, // Random change for demo
-                avatarUrl: user.avatarUrl,
-                skillLevel: user.insights?.skillLevel || 'Beginner',
-                repoCount: user.analytics?.repoCount || 0,
-                totalPRs: user.analytics?.totalPRs || 0,
-                streak: user.analytics?.streak?.current || 0
-              }));
-              
-              setLeaderboardData(transformedData);
-            } else {
-              throw new Error('Failed to fetch leaderboard data');
-            }
-          } catch (error) {
-            console.error('Error loading leaderboard:', error);
-            setError(error.message);
-            
-            // Fallback to sample data
-            setLeaderboardData([
-              { username: 'CodeMaster_Alex', points: 15420, commits: 342, change: 12 },
-              { username: 'DevNinja_Sarah', points: 14890, commits: 298, change: 8 },
-              { username: 'GitGuru_Mike', points: 13750, commits: 276, change: -3 },
-              { username: 'ByteWizard_Emma', points: 12980, commits: 245, change: 15 },
-              { username: 'CodeCrusher_Tom', points: 11560, commits: 223, change: 5 },
-              { username: 'ScriptSage_Lisa', points: 10890, commits: 201, change: -1 },
-              { username: 'DataDriven_John', points: 9750, commits: 189, change: 7 },
-              { username: 'AlgoAce_Maria', points: 8920, commits: 167, change: 3 },
-            ]);
-          } finally {
-            setIsLoading(false);
-          }
-        };
-
-        loadLeaderboard();
-      }, [timeFilter]);
-
-      // Calculate stats from real data
-      const totalCommits = leaderboardData.reduce((sum, user) => sum + user.commits, 0);
-      const totalDevelopers = leaderboardData.length;
-      const avgScore = leaderboardData.length > 0 ? Math.round(leaderboardData.reduce((sum, user) => sum + user.points, 0) / leaderboardData.length) : 0;
-      const totalRepos = leaderboardData.reduce((sum, user) => sum + (user.repoCount || 0), 0);
-
-      const statsData = [
-        { icon: Users, title: 'Total Developers', value: totalDevelopers, subtitle: 'Active contributors', delay: 0.2 },
-        { icon: GitCommit, title: 'Total Commits', value: totalCommits, subtitle: 'All time', delay: 0.3 },
-        { icon: Target, title: 'Average Score', value: avgScore, subtitle: 'Proficiency score', delay: 0.4 },
-        { icon: DollarSign, title: 'Total Repositories', value: totalRepos, subtitle: 'Public repos', delay: 0.5 },
-      ];
-
-      if (isLoading) {
-        return <LoadingScreen />;
-      }
-
-      return (
-        <div className="min-h-screen bg-gradient-to-br from-[#0B0F1A] via-[#0F1419] to-[#0B0F1A]">
-          <div className="container mx-auto px-4 py-12">
-            {/* Hero Header */}
-            <motion.div
-              className="text-center mb-16"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <div className="flex items-center justify-center gap-4 mb-6">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-[#E84142] to-[#9B2CFF] flex items-center justify-center">
-                  <Trophy size={32} className="text-white" />
-                </div>
-              </div>
-              <h1 className="text-6xl font-bold bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent mb-4 font-['JetBrains_Mono']">
-                Leaderboard
-              </h1>
-              <p className="text-xl text-gray-400 max-w-2xl mx-auto font-['JetBrains_Mono']">
-                Compete with developers worldwide and climb the ranks through your contributions
-              </p>
-            </motion.div>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-              {statsData.map((stat, index) => (
-                <StatsCard key={index} {...stat} />
-              ))}
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="text-white font-semibold text-lg font-['Fira_Sans']">
+                {user.name || user.username}
+              </h3>
+              {user.developerLevel && (
+                <span className="text-xs px-2 py-1 rounded-full bg-white/[0.05] text-gray-300 font-medium flex items-center gap-1 border border-white/[0.1] font-['Fira_Sans']">
+                  <span>{user.developerLevel.emoji}</span>
+                  {user.developerLevel.name}
+                </span>
+              )}
             </div>
-
-            {/* Top 3 Podium */}
-            <PodiumDisplay leaderboardData={leaderboardData} />
-
-            {/* Filters */}
-            <ModernCard delay={0.6} className="mb-8">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex items-center gap-2 w-80 relative">
-  <Search
-    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-    size={20}
-  />
-  <input
-    type="text"
-    placeholder="Search developers..."
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    className="w-full px-10 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[#E84142] font-['JetBrains_Mono']"
-  />
-</div>
-
-
-
-                <div className="flex items-center gap-2">
-                  <Filter className="text-gray-400" size={20} />
-                  <select
-                    value={timeFilter}
-                    onChange={(e) => setTimeFilter(e.target.value)}
-                    className="bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#E84142] font-['JetBrains_Mono']"
-                  >
-                    <option value="proficiencyScore">Proficiency Score</option>
-                    <option value="totalCommits">Total Commits</option>
-                    <option value="repoCount">Repository Count</option>
-                    <option value="totalPRs">Pull Requests</option>
-                    <option value="innovationScore">Innovation Score</option>
-                    <option value="collaborationScore">Collaboration Score</option>
-                  </select>
-                </div>
-              </div>
-            </ModernCard>
-
-            {/* Leaderboard */}
-            <ModernCard delay={0.8} className="mb-16">
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold text-white font-['JetBrains_Mono'] flex items-center gap-2">
-                  <TrendingUp className="text-[#E84142]" size={28} />
-                  Top Performers
-                </h2>
-                <p className="text-gray-400 mt-2 font-['JetBrains_Mono']">
-                  Rankings based on contributions and community engagement
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                {leaderboardData
-                  .filter(user => user.username.toLowerCase().includes(searchTerm.toLowerCase()))
-                  .map((user, index) => (
-                    <LeaderboardEntry
-                      key={user.username}
-                      user={user}
-                      rank={index + 1}
-                      isTop3={index < 3}
-                      delay={0.1 * index}
-                    />
-                  ))}
-              </div>
-            </ModernCard>
-
-            {/* Achievement Showcase */}
-            <motion.div
-              className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.2 }}
-            >
-              <ModernCard delay={1.3} className="text-center">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-yellow-500 to-yellow-600 flex items-center justify-center mx-auto mb-4">
-                  <Crown size={32} className="text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-2 font-['JetBrains_Mono']">Top Contributor</h3>
-                <p className="text-gray-400 font-['JetBrains_Mono']">Most commits this month</p>
-                <div className="mt-4 p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-yellow-400 font-['JetBrains_Mono']">CodeMaster_Alex</div>
-                  <div className="text-sm text-gray-400 font-['JetBrains_Mono']">342 commits</div>
-                </div>
-              </ModernCard>
-
-              <ModernCard delay={1.4} className="text-center">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center mx-auto mb-4">
-                  <Zap size={32} className="text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-2 font-['JetBrains_Mono']">Rising Star</h3>
-                <p className="text-gray-400 font-['JetBrains_Mono']">Biggest improvement</p>
-                <div className="mt-4 p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-green-400 font-['JetBrains_Mono']">ByteWizard_Emma</div>
-                  <div className="text-sm text-gray-400 font-['JetBrains_Mono']">+15 positions</div>
-                </div>
-              </ModernCard>
-
-              <ModernCard delay={1.5} className="text-center">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center mx-auto mb-4">
-                  <Star size={32} className="text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-2 font-['JetBrains_Mono']">Quality Champion</h3>
-                <p className="text-gray-400 font-['JetBrains_Mono']">Highest code quality</p>
-                <div className="mt-4 p-3 bg-white/5 rounded-lg">
-                  <div className="text-lg font-bold text-purple-400 font-['JetBrains_Mono']">DevNinja_Sarah</div>
-                  <div className="text-sm text-gray-400 font-['JetBrains_Mono']">98% quality score</div>
-                </div>
-              </ModernCard>
-            </motion.div>
+            <p className="text-gray-400 text-sm flex items-center gap-1 font-['Fira_Sans']">
+              @{user.username} • <GitCommit size={14} /> {user.commits || 0}{" "}
+              commits
+            </p>
           </div>
         </div>
-       
-      );
+        <div className="text-right">
+          <div className="text-2xl font-bold text-white font-['Fira_Code']">
+            <CountUp
+              end={user.points || user.metricValue || 0}
+              duration={2}
+              separator=","
+            />
+          </div>
+          <div className="text-xs text-gray-400 mb-1 font-['Fira_Sans']">
+            {getMetricDisplayName(currentMetric)}
+          </div>
+          <div
+            className={`text-sm font-medium flex items-center justify-end gap-1 font-['Fira_Sans'] ${
+              user.change > 0
+                ? "text-green-400"
+                : user.change < 0
+                ? "text-red-400"
+                : "text-gray-400"
+            }`}
+          >
+            {user.change > 0 ? "↗️" : user.change < 0 ? "↘️" : "➡️"}{" "}
+            {Math.abs(user.change || 0)}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+// Helper function to get metric display name
+const getMetricDisplayName = (metric) => {
+  switch (metric) {
+    case "proficiencyScore":
+      return "Proficiency Score";
+    case "totalCommits":
+      return "Total Commits";
+    case "repoCount":
+      return "Repositories";
+    case "totalPRs":
+      return "Pull Requests";
+    case "streak.longest":
+      return "Longest Streak (days)";
+    case "innovationScore":
+      return "Innovation Score";
+    case "collaborationScore":
+      return "Collaboration Score";
+    default:
+      return "Score";
+  }
+};
+
+const Leaderboard = () => {
+  const [timeFilter, setTimeFilter] = useState("proficiencyScore");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [leaderboardData, setLeaderboardData] = useState([]);
+  const [error, setError] = useState(null);
+
+  // Load leaderboard data from API
+  useEffect(() => {
+    const loadLeaderboard = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const response = await leaderboardService.getLeaderboard({
+          metric: timeFilter,
+          limit: 50,
+        });
+
+        if (response.success && response.data.users) {
+          const transformedData = response.data.users.map((user, index) => ({
+            username: user.username || user.name || `User${index + 1}`,
+            name: user.name,
+            rank: user.rank,
+            points: user.value || 0,
+            commits: user.analytics?.totalCommits || 0,
+            change: Math.floor(Math.random() * 20) - 10,
+            avatarUrl: user.avatarUrl,
+            developerLevel: user.developerLevel,
+            skillLevel: user.developerLevel?.name || "Beginner",
+            repoCount: user.analytics?.repoCount || 0,
+            totalPRs: user.analytics?.totalPRs || 0,
+            streak: user.analytics?.streak?.current || 0,
+            innovationScore: user.analytics?.innovationScore || 0,
+            collaborationScore: user.analytics?.collaborationScore || 0,
+            currentMetric: response.data.metric,
+            metricValue: user.value,
+          }));
+
+          setLeaderboardData(transformedData);
+        } else {
+          throw new Error("Failed to fetch leaderboard data");
+        }
+      } catch (error) {
+        console.error("Error loading leaderboard:", error);
+        setError(error.message);
+        setLeaderboardData([]);
+      } finally {
+        setIsLoading(false);
+      }
     };
+
+    loadLeaderboard();
+  }, [timeFilter]);
+
+  // Calculate stats from real data
+  const totalCommits = leaderboardData.reduce(
+    (sum, user) => sum + (user.commits || 0),
+    0
+  );
+  const totalDevelopers = leaderboardData.length;
+  const avgScore =
+    leaderboardData.length > 0
+      ? Math.round(
+          leaderboardData.reduce(
+            (sum, user) => sum + (user.points || user.metricValue || 0),
+            0
+          ) / leaderboardData.length
+        )
+      : 0;
+  const totalRepos = leaderboardData.reduce(
+    (sum, user) => sum + (user.repoCount || 0),
+    0
+  );
+
+  const statsData = [
+    {
+      icon: Users,
+      title: "Total Developers",
+      value: totalDevelopers,
+      subtitle: "Active contributors",
+      delay: 0.2,
+      color: "blue",
+    },
+    {
+      icon: GitCommit,
+      title: "Total Commits",
+      value: totalCommits,
+      subtitle: "All time",
+      delay: 0.3,
+      color: "green",
+    },
+    {
+      icon: Target,
+      title: "Average Score",
+      value: avgScore,
+      subtitle: "Proficiency score",
+      delay: 0.4,
+      color: "purple",
+    },
+    {
+      icon: Code,
+      title: "Total Repositories",
+      value: totalRepos,
+      subtitle: "Public repos",
+      delay: 0.5,
+      color: "orange",
+    },
+  ];
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen relative">
+        <LandingBackground />
+        <div className="relative z-10 min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-16 h-16 rounded-full bg-red-900/30 border border-red-700/50 flex items-center justify-center mx-auto mb-4">
+              <Trophy size={32} className="text-red-400" />
+            </div>
+            <h2 className="text-2xl font-bold text-white mb-2 font-['Fira_Sans']">
+              Failed to Load Leaderboard
+            </h2>
+            <p className="text-gray-400 mb-4 font-['Fira_Sans']">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-2 bg-gradient-to-r from-[#E84142] to-[#9B2CFF] text-white rounded-lg hover:shadow-lg hover:shadow-[#E84142]/25 transition-all duration-200 font-medium font-['Fira_Sans']"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen relative">
+      <LandingBackground />
+      <div className="relative z-10 container mx-auto px-4 py-12">
+        {/* Hero Header with Landing Page Theme */}
+        <motion.div
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.05] border border-white/[0.1] text-sm mb-8">
+            <Trophy size={16} className="text-[#E84142]" />
+            <span className="font-['Fira_Code'] font-medium text-gray-300">
+              Developer Rankings
+            </span>
+          </div>
+
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 font-['Fira_Code'] text-white">
+            Leaderboard
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-400 max-w-4xl mx-auto mb-12 leading-relaxed font-['Fira_Sans']">
+            Compete with developers worldwide and climb the ranks through your
+            contributions
+          </p>
+        </motion.div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {statsData.map((stat, index) => (
+            <StatsCard key={index} {...stat} />
+          ))}
+        </div>
+
+        {/* Top 3 Podium */}
+        <PodiumDisplay leaderboardData={leaderboardData} />
+
+        {/* Filters with Landing Page Theme */}
+        <ModernCard delay={0.6} className="mb-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="flex items-center gap-2 w-80 relative">
+              <Search
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                size={20}
+              />
+              <input
+                type="text"
+                placeholder="Search developers..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-10 py-3 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#E84142] focus:border-transparent backdrop-blur-sm font-['Fira_Sans']"
+              />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Filter className="text-gray-400" size={20} />
+              <select
+                value={timeFilter}
+                onChange={(e) => setTimeFilter(e.target.value)}
+                className="bg-white/[0.05] border border-white/[0.1] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#E84142] focus:border-transparent backdrop-blur-sm font-['Fira_Sans']"
+              >
+                <option value="proficiencyScore">Proficiency Score</option>
+                <option value="totalCommits">Total Commits</option>
+                <option value="repoCount">Repository Count</option>
+                <option value="totalPRs">Pull Requests</option>
+                <option value="streak.longest">Longest Streak</option>
+                <option value="innovationScore">Innovation Score</option>
+                <option value="collaborationScore">Collaboration Score</option>
+              </select>
+            </div>
+          </div>
+        </ModernCard>
+
+        {/* Leaderboard with Landing Page Theme */}
+        <ModernCard delay={0.8} className="mb-16">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-white flex items-center gap-2 font-['Fira_Sans']">
+              <TrendingUp className="text-[#E84142]" size={28} />
+              Top Performers
+            </h2>
+            <p className="text-gray-400 mt-2 font-['Fira_Sans']">
+              Rankings based on contributions and community engagement
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            {leaderboardData
+              .filter((user) =>
+                user.username.toLowerCase().includes(searchTerm.toLowerCase())
+              )
+              .map((user, index) => (
+                <LeaderboardEntry
+                  key={user.username}
+                  user={user}
+                  rank={index + 1}
+                  delay={0.1 * index}
+                  currentMetric={timeFilter}
+                />
+              ))}
+          </div>
+        </ModernCard>
+
+        {/* Achievement Showcase with Landing Page Theme */}
+        <motion.div
+          className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 1.2 }}
+        >
+          <ModernCard
+            delay={1.3}
+            className="text-center hover:scale-105 transition-transform duration-300"
+          >
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-yellow-500/10 to-yellow-600/10 border border-yellow-500/20 flex items-center justify-center mx-auto mb-4">
+              <Crown size={28} className="text-yellow-400" />
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2 font-['Fira_Sans']">
+              Top Contributor
+            </h3>
+            <p className="text-gray-400 mb-4 font-['Fira_Sans']">
+              Most commits this month
+            </p>
+            <div className="mt-4 p-4 bg-yellow-900/20 border border-yellow-700/30 rounded-lg backdrop-blur-sm">
+              <div className="text-lg font-bold text-yellow-400 font-['Fira_Code']">
+                {leaderboardData[0]?.name ||
+                  leaderboardData[0]?.username ||
+                  "No data"}
+              </div>
+              <div className="text-sm text-gray-300 flex items-center justify-center gap-1 mt-1 font-['Fira_Sans']">
+                <GitCommit size={14} />
+                {leaderboardData[0]?.commits || 0} commits
+              </div>
+            </div>
+          </ModernCard>
+
+          <ModernCard
+            delay={1.4}
+            className="text-center hover:scale-105 transition-transform duration-300"
+          >
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-green-500/10 to-green-600/10 border border-green-500/20 flex items-center justify-center mx-auto mb-4">
+              <Zap size={28} className="text-green-400" />
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2 font-['Fira_Sans']">
+              Rising Star
+            </h3>
+            <p className="text-gray-400 mb-4 font-['Fira_Sans']">
+              Biggest improvement
+            </p>
+            <div className="mt-4 p-4 bg-green-900/20 border border-green-700/30 rounded-lg backdrop-blur-sm">
+              <div className="text-lg font-bold text-green-400 font-['Fira_Code']">
+                {leaderboardData.find((user) => user.change > 0)?.name ||
+                  leaderboardData.find((user) => user.change > 0)?.username ||
+                  "No data"}
+              </div>
+              <div className="text-sm text-gray-300 flex items-center justify-center gap-1 mt-1 font-['Fira_Sans']">
+                <TrendingUp size={14} />+
+                {Math.max(
+                  ...leaderboardData.map((user) =>
+                    user.change > 0 ? user.change : 0
+                  )
+                )}{" "}
+                positions
+              </div>
+            </div>
+          </ModernCard>
+
+          <ModernCard
+            delay={1.5}
+            className="text-center hover:scale-105 transition-transform duration-300"
+          >
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-[#9B2CFF]/10 to-purple-600/10 border border-[#9B2CFF]/20 flex items-center justify-center mx-auto mb-4">
+              <Star size={28} className="text-[#9B2CFF]" />
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2 font-['Fira_Sans']">
+              Quality Champion
+            </h3>
+            <p className="text-gray-400 mb-4 font-['Fira_Sans']">
+              Highest code quality
+            </p>
+            <div className="mt-4 p-4 bg-purple-900/20 border border-purple-700/30 rounded-lg backdrop-blur-sm">
+              <div className="text-lg font-bold text-[#9B2CFF] font-['Fira_Code']">
+                {leaderboardData[1]?.name ||
+                  leaderboardData[1]?.username ||
+                  "No data"}
+              </div>
+              <div className="text-sm text-gray-300 flex items-center justify-center gap-1 mt-1 font-['Fira_Sans']">
+                <GitBranch size={14} />
+                {leaderboardData[1]?.developerLevel?.name || "Quality Champion"}
+              </div>
+            </div>
+          </ModernCard>
+        </motion.div>
+      </div>
+    </div>
+  );
+};
 
 export default Leaderboard;

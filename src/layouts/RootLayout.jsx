@@ -11,9 +11,12 @@ const navItems = [
   { to: '/', label: 'Home' },
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/stake', label: 'Stake' },
+
+  // { to: '/quests', label: 'Quests' },
+
   { to: '/leaderboard', label: 'Leaderboard' },
   { to: '/challenges', label: 'Challenges' },
-  { to: '/contributions', label: 'Contributions' },
+  // { to: '/contributions', label: 'Contributions' },
 ]
 
 const RootLayout = () => {

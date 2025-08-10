@@ -44,6 +44,8 @@ const App = () => {
                     {/* Public routes */}
                     <Route index element={<Landing />} />
 
+
+
                     {/* Routes requiring both wallet and GitHub */}
                     <Route path="/dashboard" element={
                       <FullyProtectedRoute>
@@ -55,16 +57,19 @@ const App = () => {
                         <Profile />
                       </FullyProtectedRoute>
                     } />
-                    <Route path="/contributions" element={
+                    {/* <Route path="/contributions" element={
                       <FullyProtectedRoute>
                         <Contributions />
                       </FullyProtectedRoute>
-                    } />
+                    } /> */}
                     <Route path="/leaderboard" element={
                       <FullyProtectedRoute>
                         <Leaderboard />
                       </FullyProtectedRoute>
+
                     } />
+
+
 
                     {/* Routes requiring wallet connection */}
                     <Route path="/stake" element={
@@ -86,6 +91,7 @@ const App = () => {
                     } />
 
                     {/* Debug/Test routes */}
+
                     <Route path="/debug" element={<Debug />} />
                     <Route path="/test" element={<TestIntegration />} />
                     <Route path="/auth-state-test" element={<AuthStateTest />} />
