@@ -60,7 +60,7 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            The first decentralized platform that rewards developers for their GitHub contributions through AVAX staking and gamified challenges.
+            The decentralized platform that rewards developers for their GitHub contributions through AVAX staking and gamified challenges.
           </motion.p>
 
           {/* CTA Buttons */}
