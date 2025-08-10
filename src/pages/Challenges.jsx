@@ -11,6 +11,7 @@ import { GitStakeProtocol } from '../blockchainServices/integration';
 import { questService } from '../services/questService';
 import { useToast } from '../components/ToastSystem';
 import { ethers } from 'ethers';
+import { useUserAnalytics } from '../hooks/useApi';
 
 // Loading Screen Component
 const LoadingScreen = () => (
@@ -1479,6 +1480,7 @@ const Challenges = () => {
           </div>
         )}
       </div>
+      <AuthDebug pageName="Challenges" />
     </div>
   );
 };

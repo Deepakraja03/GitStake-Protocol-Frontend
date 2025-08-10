@@ -5,11 +5,12 @@ import { useAuthContext } from '../context/AuthContext';
 
 export default function GithubProvider({ onSuccess, onError, className = "" }) {
   const [loading, setLoading] = useState(false);
-  const { user, setUser, setIsAuthenticated } = useAuthContext();
+  const { user } = useAuthContext();
 
   const handleGitHubSignIn = async () => {
     setLoading(true);
     try {
+      console.log('🔐 Starting GitHub authentication...');
       const result = await signInWithGitHub();
 
       // Store user data and GitHub access token
@@ -23,21 +24,24 @@ export default function GithubProvider({ onSuccess, onError, className = "" }) {
         isNewUser: result.isNewUser
       };
 
-      // Update auth context
-      setUser(userData);
-      setIsAuthenticated(true);
-
-      // Store in localStorage for persistence
+      // Store in localStorage for persistence (AuthContext will pick this up)
       localStorage.setItem('userData', JSON.stringify(userData));
       localStorage.setItem('githubAccessToken', result.accessToken);
 
-      console.log('GitHub authentication successful:', userData);
+      console.log('✅ GitHub authentication successful:', {
+        username: userData.username,
+        email: userData.email,
+        hasToken: !!result.accessToken
+      });
+
+      // Don't manually update context - let the useEffect in AuthContext handle it
+      // This prevents state synchronization issues
 
       if (onSuccess) {
         onSuccess(userData);
       }
     } catch (error) {
-      console.error('GitHub authentication failed:', error);
+      console.error('❌ GitHub authentication failed:', error);
 
       let errorMessage = 'Authentication failed';
       if (error.code === 'auth/popup-closed-by-user') {
@@ -56,13 +60,20 @@ export default function GithubProvider({ onSuccess, onError, className = "" }) {
 
   const handleSignOut = async () => {
     try {
-      await signOutUser();
-      setUser(null);
-      setIsAuthenticated(false);
+      console.log('🔐 Signing out from GitHub...');
+
+      // Clear stored data first
       localStorage.removeItem('userData');
       localStorage.removeItem('githubAccessToken');
+
+      // Sign out from Firebase
+      await signOutUser();
+
+      // Don't manually update context - let the useEffect in AuthContext handle it
+      console.log('✅ GitHub sign out successful');
+
     } catch (error) {
-      console.error('Sign out failed:', error);
+      console.error('❌ GitHub sign out failed:', error);
     }
   };
 

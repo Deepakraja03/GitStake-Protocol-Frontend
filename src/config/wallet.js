@@ -1,6 +1,14 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { avalanche, avalancheFuji } from 'wagmi/chains';
 import { http } from 'viem';
+import {
+  metaMaskWallet,
+  walletConnectWallet,
+  coinbaseWallet,
+  rainbowWallet,
+  trustWallet,
+  coreWallet,
+} from '@rainbow-me/rainbowkit/wallets';
 
 export const wagmiConfig = getDefaultConfig({
   appName: 'GitStake Protocol',
@@ -10,6 +18,19 @@ export const wagmiConfig = getDefaultConfig({
     [avalanche.id]: http('https://api.avax.network/ext/bc/C/rpc'),
     [avalancheFuji.id]: http('https://api.avax-test.network/ext/bc/C/rpc'),
   },
+  wallets: [
+    {
+      groupName: 'Recommended',
+      wallets: [
+        coreWallet,
+        metaMaskWallet,
+        walletConnectWallet,
+        coinbaseWallet,
+        rainbowWallet,
+        trustWallet,
+      ],
+    },
+  ],
 });
 
 export const chains = [avalanche, avalancheFuji];

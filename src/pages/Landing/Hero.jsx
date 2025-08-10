@@ -71,7 +71,7 @@ const Hero = () => {
             transition={{ duration: 0.8, delay: 0.6 }}
           >
             <Link
-              to="/auth"
+              to="/challenges"
               className="group px-8 py-4 bg-gradient-to-r from-[#E84142] to-[#9B2CFF] rounded-xl font-semibold text-white text-lg hover:shadow-lg hover:shadow-[#E84142]/25 transition-all duration-300 font-['Fira_Sans']"
             >
               <span className="flex items-center gap-2">
